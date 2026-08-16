@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "io.github.ap095665_boop.twa",
-        "sha256_cert_fingerprints": ["59:CE:51:AF:6E:DF:C2:AA:BE:16:38:F3:77:77:F3:9A:B7:7D:67:B8:DB:0F:30:06:A3:D1:8F:41:B0:C9:B4:DF"]
+        "package_name": "site.sindora.shoppy.twa",
+        "sha256_cert_fingerprints": ["9A:18:B9:74:27:89:16:30:23:A0:48:CB:59:A0:2F:9D:A8:4E:CA:72:35:53:B7:F2:01:4F:A7:21:C0:6F:70:E2"]
       }
     }]
