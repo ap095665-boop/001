@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090a0d">
+<title>Simple Shop Manager — Simple shop records</title>
+<style>
+:root{
+  --bg:#090a0d;
+  --surface:#111318;
+  --surface2:#171a21;
+  --text:#f7f8fa;
+  --muted:#a7acb7;
+  --line:rgba(255,255,255,.10);
+  --lime:#c9ff3d;
+  --lime2:#e3ff8c;
+  --purple:#8d6cff;
+  --shadow:0 30px 90px rgba(0,0,0,.48);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{
+  margin:0;
+  min-width:320px;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  overflow-x:hidden;
+}
+a{color:inherit}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.site{
+  min-height:100vh;
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(700px 500px at 78% 20%,rgba(141,108,255,.13),transparent 70%),
+    radial-gradient(600px 450px at 12% 80%,rgba(201,255,61,.08),transparent 70%),
+    var(--bg);
+}
+.site:before{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;opacity:.22;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:linear-gradient(to bottom,black,transparent 85%);
+}
+.container{width:min(1180px,calc(100% - 40px));margin:auto}
+.header{
+  position:relative;z-index:10;
+  height:78px;display:flex;align-items:center;justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:900;letter-spacing:-.04em}
+.brand-mark{
+  width:36px;height:36px;border-radius:12px;background:var(--lime);color:#080a0d;
+  display:grid;place-items:center;font-weight:950;box-shadow:0 0 30px rgba(201,255,61,.16);
+}
+.brand-name{font-size:17px}
+.nav{display:flex;align-items:center;gap:4px}
+.nav a{text-decoration:none;color:#c7cad2;font-size:13px;padding:10px 12px;border-radius:10px}
+.nav a:hover{color:#fff;background:#ffffff08}
+.nav .nav-cta{background:#fff;color:#0a0b0d;font-weight:850;padding:11px 15px}
+.hero{
+  position:relative;z-index:2;
+  min-height:calc(100vh - 78px);
+  display:grid;grid-template-columns:minmax(0,1.02fr) minmax(360px,.98fr);
+  align-items:center;gap:50px;padding:35px 0 70px;
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--line);background:rgba(255,255,255,.035);
+  padding:8px 11px;border-radius:999px;color:#d6d9df;font-size:11px;font-weight:800;
+  backdrop-filter:blur(12px);
+}
+.eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 14px var(--lime)}
+h1{
+  margin:21px 0 0;
+  max-width:720px;
+  font-size:clamp(54px,7vw,92px);
+  line-height:.88;letter-spacing:-.075em;font-weight:950;
+}
+h1 span{color:var(--lime)}
+.hero-copy>p{
+  max-width:590px;margin:25px 0 25px;
+  color:var(--muted);font-size:clamp(15px,1.6vw,18px);line-height:1.55;
+}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:48px;padding:0 17px;border-radius:14px;border:1px solid var(--line);
+  text-decoration:none;font-weight:850;font-size:14px;transition:transform .2s,box-shadow .2s,background .2s;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--lime);color:#090b0d;border-color:transparent;box-shadow:0 15px 40px rgba(201,255,61,.12)}
+.btn-secondary{background:rgba(255,255,255,.045);color:#fff}
+.proof{display:flex;flex-wrap:wrap;gap:15px 22px;margin-top:20px;color:#7f8490;font-size:11px}
+.proof b{color:#d8dbe0}
+.product-stage{position:relative;min-height:570px;display:grid;place-items:center}
+.aura{
+  position:absolute;width:520px;max-width:100%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,rgba(141,108,255,.24),transparent 66%);
+  filter:blur(18px);animation:breathe 5s ease-in-out infinite;
+}
+.phone{
+  position:relative;z-index:2;width:290px;height:570px;padding:7px;
+  border-radius:38px;background:#1d2027;border:1px solid rgba(255,255,255,.14);
+  box-shadow:var(--shadow),0 0 70px rgba(141,108,255,.12);
+  transform:rotate(3deg);animation:phoneFloat 5s ease-in-out infinite;
+}
+.phone-screen{height:100%;border-radius:31px;overflow:hidden;background:#0c0e12;padding:35px 13px 13px}
+.notch{position:absolute;z-index:3;top:12px;left:50%;transform:translateX(-50%);width:85px;height:19px;border-radius:0 0 14px 14px;background:#050608}
+.app-title{display:flex;justify-content:space-between;align-items:center;color:#9da2ad;font-size:9px;margin:0 3px 10px}
+.app-title strong{color:#fff;font-size:11px}
+.revenue-card{border:1px solid rgba(255,255,255,.08);background:linear-gradient(145deg,#191c23,#111318);border-radius:19px;padding:16px}
+.label{font-size:8px;letter-spacing:.12em;color:#858b97;font-weight:850}
+.revenue-value{font-size:31px;font-weight:950;letter-spacing:-.06em;margin-top:3px}
+.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
+.mini-stat{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.05);border-radius:11px;padding:9px}
+.mini-stat small{display:block;color:#777d89;font-size:7px}.mini-stat b{font-size:11px}
+.fake-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}
+.fake-key{height:43px;display:grid;place-items:center;border-radius:11px;background:#171a20;border:1px solid rgba(255,255,255,.06);font-size:12px;font-weight:850}
+.fake-key.record{grid-column:1/-1;background:var(--lime);color:#080a0c;border-color:transparent}
+.badge{
+  position:absolute;z-index:4;right:-32px;bottom:85px;
+  background:#fff;color:#0b0c0f;border-radius:15px;padding:11px 13px;
+  box-shadow:0 20px 50px rgba(0,0,0,.5);font-size:11px;font-weight:900;
+  animation:badgeFloat 4s ease-in-out infinite;
+}
+.badge small{display:block;color:#737782;font-size:8px;margin-top:3px}
+.section{position:relative;z-index:2;padding:85px 0}
+.section-head{max-width:650px;margin-bottom:28px}
+.kicker{color:var(--lime);font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.section h2{font-size:clamp(32px,4.5vw,55px);line-height:.95;letter-spacing:-.06em;margin:10px 0}
+.section-head p{color:var(--muted);line-height:1.55;margin:0}
+.feature-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.feature{
+  min-height:150px;padding:18px;border:1px solid var(--line);border-radius:18px;
+  background:rgba(255,255,255,.035);transition:transform .25s,border-color .25s,background .25s;
+}
+.feature:hover{transform:translateY(-5px);border-color:rgba(201,255,61,.35);background:rgba(255,255,255,.055)}
+.feature-icon{font-size:22px}.feature h3{font-size:14px;margin:15px 0 6px}.feature p{font-size:11px;color:#858b96;line-height:1.45;margin:0}
+.offer{
+  display:grid;grid-template-columns:1fr auto;gap:25px;align-items:center;
+  border:1px solid rgba(201,255,61,.18);background:linear-gradient(110deg,rgba(201,255,61,.08),rgba(141,108,255,.07));
+  border-radius:24px;padding:28px;
+}
+.offer h2{margin:0;font-size:clamp(28px,4vw,48px)}.offer p{color:var(--muted);margin:8px 0 0;line-height:1.5}
+.footer{padding:30px 0 45px;border-top:1px solid var(--line);color:#707581;font-size:11px}
+.modal{
+  position:fixed;z-index:100;inset:0;padding:20px;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.72);backdrop-filter:blur(12px);
+}
+.modal.is-open{display:flex}
+.modal-card{
+  width:min(460px,100%);max-height:min(90vh,700px);overflow:auto;
+  background:#15181e;border:1px solid rgba(255,255,255,.13);border-radius:24px;padding:23px;box-shadow:var(--shadow);
+  animation:modalIn .25s ease both;
+}
+.modal-top{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.modal h2{margin:0;font-size:26px;letter-spacing:-.04em}.modal p{color:var(--muted);font-size:13px;line-height:1.55}
+.close-btn{width:38px;height:38px;border:1px solid var(--line);border-radius:11px;background:#ffffff08;color:#fff;font-size:18px}
+.demo-list{display:grid;gap:8px;margin:18px 0}.demo-step{border:1px solid var(--line);border-radius:13px;padding:12px;background:#ffffff04;font-size:13px}
+.form{display:grid;gap:10px;margin-top:17px}.form label{font-size:11px;color:#9ba0aa;font-weight:800}.form input,.form textarea{width:100%;margin-top:5px;background:#0c0e12;color:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;outline:none}.form textarea{min-height:85px;resize:vertical}.form input:focus,.form textarea:focus{border-color:rgba(201,255,61,.55)}
+.modal-note{font-size:10px!important;color:#747a86!important}
+@keyframes phoneFloat{0%,100%{transform:rotate(3deg) translateY(0)}50%{transform:rotate(3deg) translateY(-10px)}}
+@keyframes badgeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes breathe{0%,100%{transform:scale(.93);opacity:.7}50%{transform:scale(1.06);opacity:1}}
+@keyframes modalIn{from{opacity:0;transform:translateY(15px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:900px){
+  .container{width:min(100% - 32px,650px)}
+  .header{height:70px}
+  .nav a:not(.nav-cta){display:none}
+  .hero{display:flex;flex-direction:column;align-items:stretch;gap:35px;padding:38px 0 65px;min-height:auto}
+  h1{font-size:clamp(52px,14vw,76px)}
+  .hero-copy>p{font-size:15px;margin:20px 0 22px}
+  .product-stage{min-height:520px;width:100%}
+  .phone{width:270px;height:525px}
+  .badge{right:calc(50% - 175px);bottom:58px}
+  .feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .feature:last-child{grid-column:1/-1}
+  .offer{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .container{width:calc(100% - 28px)}
+  .brand-name{font-size:16px}
+  .nav .nav-cta{padding:9px 11px;font-size:11px}
+  .hero{padding-top:30px}
+  .actions{display:grid;grid-template-columns:1fr}
+  .btn{width:100%}
+  .proof{gap:8px 15px}
+  .product-stage{min-height:500px}
+  .phone{width:250px;height:490px}
+  .phone-screen{padding-top:32px}
+  .fake-key{height:39px}
+  .badge{right:calc(50% - 150px);bottom:48px}
+  .feature-grid{grid-template-columns:1fr}
+  .feature:last-child{grid-column:auto}
+  .section{padding:65px 0}
+  .offer{padding:22px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="site" id="ssmMarketingSite">
+  <header class="header container">
+    <a class="brand" href="#top" data-scroll="top" aria-label="Simple Shop home">
+      <span class="brand-mark">S</span><span class="brand-name">Simple Shop</span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#features" data-scroll="features">Features</a>
+      <a href="#demo" data-open="demo">See demo</a>
+      <a class="nav-cta" href="#contact" data-open="contact">Get it for ₹350</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero container">
+      <div class="hero-copy">
+        <div class="eyebrow"><i></i> Built for small shops</div>
+        <h1>Your shop.<br><span>Simplified.</span></h1>
+        <p>Record every sale in seconds. Track purchased stock, keep shop notes, and instantly know where your day stands — without complicated accounting software.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#contact" data-open="contact">Get started · ₹350</a>
+          <a class="btn btn-secondary" href="#demo" data-open="demo">▶ See how it works</a>
+          <a class="btn btn-secondary" id="ssmDownloadApp" href="YOUR_GITHUB_APP_FILE_LINK" download>⬇ Download app</a>
+        </div>
+        <div class="proof">
+          <span>✓ <b>One-time</b> payment</span>
+          <span>✓ <b>Offline-ready</b></span>
+          <span>✓ <b>Simple</b> by design</span>
+        </div>
+      </div>
+
+      <div class="product-stage" aria-label="Sales Counter preview">
+        <div class="aura"></div>
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="phone-screen">
+            <div class="app-title"><strong>Sales Counter</strong><span>15 Aug 2026</span></div>
+            <div class="revenue-card">
+              <div class="label">TODAY'S SALES</div>
+              <div class="revenue-value">₹12,450</div>
+              <div class="mini-stats">
+                <div class="mini-stat"><small>CUSTOMERS</small><b>87</b></div>
+                <div class="mini-stat"><small>AVG / SALE</small><b>₹143</b></div>
+              </div>
+            </div>
+            <div class="fake-pad" aria-hidden="true">
+              <div class="fake-key">1</div><div class="fake-key">2</div><div class="fake-key">3</div>
+              <div class="fake-key">4</div><div class="fake-key">5</div><div class="fake-key">6</div>
+              <div class="fake-key">7</div><div class="fake-key">8</div><div class="fake-key">9</div>
+              <div class="fake-key">C</div><div class="fake-key">0</div><div class="fake-key">⌫</div>
+              <div class="fake-key record">✓ RECORD SALE</div>
+            </div>
+          </div>
+        </div>
+        <div class="badge">📦 Stock purchased<small>Today · ₹4,200</small></div>
+      </div>
+    </section>
+
+    <section class="section container" id="features">
+      <div class="section-head">
+        <div class="kicker">Everything simple</div>
+        <h2>The tools a small shop actually needs.</h2>
+        <p>No accounting maze. Just quick records, clear totals and useful shop information.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature"><div class="feature-icon">💰</div><h3>Sales</h3><p>Enter an amount, tap record, and your daily total updates instantly.</p></article>
+        <article class="feature"><div class="feature-icon">📦</div><h3>Stock purchases</h3><p>Keep a simple record of what you purchased and how much you spent.</p></article>
+        <article class="feature"><div class="feature-icon">📝</div><h3>Notes & reminders</h3><p>Keep important shop tasks, supplier notes and reminders together.</p></article>
+        <article class="feature"><div class="feature-icon">🧮</div><h3>Calculator</h3><p>A quick calculator is always available when you need it.</p></article>
+        <article class="feature"><div class="feature-icon">📊</div><h3>Reports</h3><p>See daily, weekly, monthly and custom-date sales at a glance.</p></article>
+      </div>
+    </section>
+
+    <section class="section container" id="offer">
+      <div class="offer">
+        <div>
+          <div class="kicker">One-time purchase</div>
+          <h2>Simple shop records. ₹350 once.</h2>
+          <p>No complicated setup. Use it on your phone and keep your daily shop routine simple.</p>
+        </div>
+        <a class="btn btn-primary" href="#contact" data-open="contact">Get started →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© 2026 Simple Shop Manager · Built for simple everyday shop records.</div>
+  </footer>
+</div>
+
+<div class="modal" id="ssmDemoModal" role="dialog" aria-modal="true" aria-labelledby="ssmDemoTitle">
+  <div class="modal-card">
+    <div class="modal-top">
+      <h2 id="ssmDemoTitle">See how it works</h2>
+      <button class="close-btn" type="button" data-close aria-label="Close demo">×</button>
+    </div>
+    <p>Four simple steps. No accounting knowledge required.</p>
+    <div class="demo-list">
+      <div class="demo-step"><b>01</b> · Enter ₹50</div>
+      <div class="demo-step"><b>02</b> · Tap <b>Record Sale</b></div>
+      <div class="demo-step"><b>03</b> · Your daily total becomes ₹50</div>
+      <div class="demo-step"><b>04</b> · Repeat for every customer</div>
+    </div>
+    <button class="btn btn-primary" type="button" data-close style="width:100%">Close</button>
+  </div>
+</div>
+
+<div class="modal" id="ssmContactModal" role="dialog" aria-modal="true" aria-labelledby="ssmContactTitle">
+  <div class="modal-card">
+    <div class="modal-top">
+      <h2 id="ssmContactTitle">Get Simple Shop</h2>
+      <button class="close-btn" type="button" data-close aria-label="Close contact form">×</button>
+    </div>
+    <p>Send an enquiry for the ₹350 lifetime version.</p>
+    <form class="form" id="ssmEnquiryForm">
+      <label>Shop / owner name<input id="ssmOwner" required autocomplete="name"></label>
+      <label>Mobile number<input id="ssmPhone" required inputmode="tel" autocomplete="tel"></label>
+      <label>Message<textarea id="ssmMessage" placeholder="Optional"></textarea></label>
+      <button class="btn btn-primary" type="submit">Send enquiry on WhatsApp</button>
+      <p class="modal-note">Before publishing, replace the WhatsApp destination in the JavaScript with your business number.</p>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var demoModal = document.getElementById("ssmDemoModal");
+  var contactModal = document.getElementById("ssmContactModal");
+  var enquiryForm = document.getElementById("ssmEnquiryForm");
+  /*
+    APP DOWNLOAD:
+    Replace YOUR_GITHUB_APP_FILE_LINK above with the direct/raw GitHub link
+    to your APK/app file. The button will then open/download that file.
+  */
+
+  function openModal(modal){
+    if(!modal) return;
+    modal.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+    var close = modal.querySelector("[data-close]");
+    if(close) close.focus();
+  }
+
+  function closeAllModals(){
+    document.querySelectorAll(".modal.is-open").forEach(function(modal){
+      modal.classList.remove("is-open");
+    });
+    document.body.style.overflow = "";
+  }
+
+  document.querySelectorAll("[data-open]").forEach(function(link){
+    link.addEventListener("click", function(event){
+      event.preventDefault();
+      var type = link.getAttribute("data-open");
+      if(type === "demo") openModal(demoModal);
+      if(type === "contact") openModal(contactModal);
+    });
+  });
+
+  document.querySelectorAll("[data-close]").forEach(function(button){
+    button.addEventListener("click", closeAllModals);
+  });
+
+  document.querySelectorAll(".modal").forEach(function(modal){
+    modal.addEventListener("click", function(event){
+      if(event.target === modal) closeAllModals();
+    });
+  });
+
+  document.addEventListener("keydown", function(event){
+    if(event.key === "Escape") closeAllModals();
+  });
+
+  document.querySelectorAll("[data-scroll]").forEach(function(link){
+    link.addEventListener("click", function(event){
+      event.preventDefault();
+      var target = link.getAttribute("data-scroll");
+      var element = document.getElementById(target);
+      if(element) element.scrollIntoView({behavior:"smooth",block:"start"});
+      else window.scrollTo({top:0,behavior:"smooth"});
+    });
+  });
+
+  enquiryForm.addEventListener("submit", function(event){
+    event.preventDefault();
+
+    var owner = document.getElementById("ssmOwner").value.trim();
+    var phone = document.getElementById("ssmPhone").value.trim();
+    var message = document.getElementById("ssmMessage").value.trim();
+
+    var destination = ""; 
+    /*
+      IMPORTANT:
+      Replace destination with your WhatsApp number in international format,
+      without +, spaces or dashes.
+      Example for India: 919876543210
+    */
+
+    var text = [
+      "Simple Shop enquiry",
+      "Name: " + owner,
+      "Phone: " + phone,
+      "Message: " + (message || "-")
+    ].join("\n");
+
+    if(destination){
+      window.open("https://wa.me/" + destination + "?text=" + encodeURIComponent(text),"_blank","noopener");
+    }else{
+      // Safe fallback while the owner has not configured a number.
+      navigator.clipboard && navigator.clipboard.writeText(text).catch(function(){});
+      alert("Enquiry prepared. Add your WhatsApp number in the HTML before publishing.");
+    }
+  });
+})();
+</script>
+</body>
+</html>
