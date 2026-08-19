@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#090a0d">
-<title>Simple Shop Manager — Simple shop records</title>
+<title>Simple Shop Manager — Simple shop records + Free Digital Bio</title>
 <style>
 :root{
   --bg:#090a0d;
@@ -204,6 +204,21 @@ h1 span{color:var(--lime)}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}
 }
+
+.digital-bio-banner{
+  margin:0 0 24px;border:1px solid rgba(201,255,61,.22);
+  background:linear-gradient(115deg,rgba(201,255,61,.10),rgba(141,108,255,.10));
+  border-radius:24px;padding:24px 28px;display:grid;
+  grid-template-columns:1fr auto;align-items:center;gap:24px;
+  box-shadow:0 20px 60px rgba(0,0,0,.18);
+}
+.digital-bio-banner h2{margin:0;font-size:clamp(25px,3.5vw,40px);line-height:1;letter-spacing:-.055em}
+.digital-bio-banner p{margin:9px 0 0;color:var(--muted);line-height:1.5;font-size:13px;max-width:680px}
+.digital-bio-banner .banner-points{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px;color:#cfd3da;font-size:11px;font-weight:750}
+.digital-bio-banner .banner-points span::before{content:"✓";color:var(--lime);margin-right:5px;font-weight:900}
+@media(max-width:900px){.digital-bio-banner{grid-template-columns:1fr}}
+@media(max-width:520px){.digital-bio-banner{padding:20px}.digital-bio-banner .btn{width:100%}}
+
 </style>
 </head>
 <body>
@@ -215,7 +230,7 @@ h1 span{color:var(--lime)}
     <nav class="nav" aria-label="Main navigation">
       <a href="#features" data-scroll="features">Features</a>
       <a href="#demo" data-open="demo">See demo</a>
-      <a class="nav-cta" href="#contact" data-open="contact">Get it for ₹350</a>
+      <a class="nav-cta" href="#contact" data-open="contact">Get it for ₹379</a>
     </nav>
   </header>
 
@@ -226,7 +241,7 @@ h1 span{color:var(--lime)}
         <h1>Your shop.<br><span>Simplified.</span></h1>
         <p>Record every sale in seconds. Track purchased stock, keep shop notes, and instantly know where your day stands — without complicated accounting software.</p>
         <div class="actions">
-          <a class="btn btn-primary" href="#contact" data-open="contact">Get started · ₹350</a>
+          <a class="btn btn-primary" href="#contact" data-open="contact">Get started · ₹379</a>
           <a class="btn btn-secondary" href="#demo" data-open="demo">▶ See how it works</a>
           <a class="btn btn-secondary" id="ssmDownloadApp" href="/app-release.apk" download>⬇ Download app</a>
         </div>
@@ -279,11 +294,28 @@ h1 span{color:var(--lime)}
       </div>
     </section>
 
+
+    <section class="section container" id="digital-bio">
+      <div class="digital-bio-banner">
+        <div>
+          <div class="kicker">FREE BONUS FOR YOUR BUSINESS</div>
+          <h2>Give your business a digital identity.</h2>
+          <p><strong>Get a free Digital Bio webpage</strong> for your business — one simple page to showcase your shop, services, contact details and online presence in one shareable link.</p>
+          <div class="banner-points">
+            <span>Easy to share</span>
+            <span>Professional online presence</span>
+            <span>Perfect for WhatsApp & social media</span>
+          </div>
+        </div>
+        <a class="btn btn-primary" href="#contact" data-open="contact">Claim your free Bio →</a>
+      </div>
+    </section>
+
     <section class="section container" id="offer">
       <div class="offer">
         <div>
           <div class="kicker">One-time purchase</div>
-          <h2>Simple shop records. ₹350 once.</h2>
+          <h2>Simple shop records. ₹379 once.</h2>
           <p>No complicated setup. Use it on your phone and keep your daily shop routine simple.</p>
         </div>
         <a class="btn btn-primary" href="#contact" data-open="contact">Get started →</a>
@@ -319,7 +351,7 @@ h1 span{color:var(--lime)}
       <h2 id="ssmContactTitle">Get Simple Shop</h2>
       <button class="close-btn" type="button" data-close aria-label="Close contact form">×</button>
     </div>
-    <p>Send an enquiry for the ₹350 lifetime version.</p>
+    <p>Send an enquiry for the ₹379 lifetime version.</p>
     <form class="form" id="ssmEnquiryForm">
       <label>Shop / owner name<input id="ssmOwner" required autocomplete="name"></label>
       <label>Mobile number<input id="ssmPhone" required inputmode="tel" autocomplete="tel"></label>
