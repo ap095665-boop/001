@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>Auto Bio</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050505}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;touch-action:none}
+#app{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;background:#050505}
+
+#gate,#intro,#profile,#flash,#actionFx{position:absolute;inset:0}
+#gate{
+ z-index:50;display:flex;align-items:center;justify-content:center;text-align:center;
+ background:
+ radial-gradient(circle at 50% 42%,rgba(255,210,25,.15),transparent 28%),
+ radial-gradient(circle at 50% 100%,rgba(255,174,0,.10),transparent 38%),#050505;
+ color:#fff;transition:opacity .8s ease,visibility .8s
+}
+.gateGlow{
+ position:absolute;width:65vw;height:65vw;max-width:500px;max-height:500px;border:1px solid rgba(255,216,45,.2);
+ border-radius:50%;box-shadow:0 0 100px rgba(255,205,0,.12) inset,0 0 100px rgba(255,205,0,.08);
+ animation:gatePulse 3s ease-in-out infinite
+}
+.gateContent{position:relative;z-index:2;padding:25px}
+.logo{
+ width:78px;height:78px;margin:0 auto 22px;border-radius:24px;display:grid;place-items:center;
+ font-size:22px;font-weight:950;letter-spacing:-1px;color:#111;background:linear-gradient(145deg,#fff0a0,#e9ae00);
+ box-shadow:0 12px 45px rgba(255,205,0,.18)
+}
+.kicker{font-size:10px;letter-spacing:5px;color:#cfcfcf;text-transform:uppercase}
+.enter{
+ margin-top:27px;width:min(82vw,330px);min-height:60px;border:0;border-radius:19px;
+ font-weight:900;letter-spacing:3px;font-size:12px;color:#111;
+ background:linear-gradient(135deg,#fff0a0,#ffd21a,#e7a900);
+ box-shadow:0 12px 45px rgba(255,202,0,.25);animation:buttonPulse 2s ease-in-out infinite
+}
+.hint{margin-top:15px;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase}
+
+#intro{
+ z-index:10;background:#030303;opacity:0;visibility:hidden;transition:opacity .5s;
+ overflow:hidden
+}
+.videoFrame{
+ position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;
+}
+#intro video{
+ width:100%;height:100%;object-fit:cover;display:block;
+ filter:saturate(1.05) contrast(1.04);
+}
+.videoOverlay{
+ position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none;
+ mix-blend-mode:screen;
+}
+.videoGrid{
+ position:absolute;inset:-55%;
+ background-image:
+  linear-gradient(rgba(255,210,30,.075) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,210,30,.075) 1px,transparent 1px);
+ background-size:42px 42px;
+ transform:perspective(520px) rotateX(64deg) translateY(24%);
+ animation:videoGridMove 9s linear infinite;
+ opacity:.65;
+}
+.videoHalo{
+ position:absolute;left:50%;top:50%;width:min(78vw,650px);height:min(78vw,650px);
+ transform:translate(-50%,-50%);border-radius:50%;
+ border:2px solid rgba(255,215,45,.24);
+ box-shadow:0 0 55px rgba(255,205,0,.12),0 0 120px rgba(255,190,0,.08) inset;
+ animation:videoHaloPulse 3.5s ease-in-out infinite;
+}
+.halo2{
+ width:min(105vw,850px);height:min(105vw,850px);
+ border-color:rgba(255,215,45,.11);
+ animation-delay:-1.4s;animation-duration:5s
+}
+.videoParticle{
+ position:absolute;width:4px;height:4px;border-radius:50%;
+ background:#ffd92e;box-shadow:0 0 18px rgba(255,210,30,.95);
+ opacity:.65;
+ animation:videoParticleFloat 5s ease-in-out infinite;
+}
+.p1{left:17%;top:25%;animation-delay:-1s}.p2{right:16%;top:34%;animation-delay:-3s}
+.p3{left:28%;bottom:22%;animation-delay:-2s}.p4{right:27%;bottom:27%;animation-delay:-4s}
+.p5{left:8%;top:55%;animation-delay:-2.8s}.p6{right:8%;bottom:48%;animation-delay:-1.8s}
+.videoStreak{
+ position:absolute;width:48vw;height:2px;max-width:560px;
+ background:linear-gradient(90deg,transparent,rgba(255,225,90,.78),transparent);
+ filter:blur(.5px);opacity:.5;
+ animation:videoStreakMove 4.5s linear infinite;
+}
+.videoStreak.s1{left:-50%;top:27%;transform:rotate(-24deg)}
+.videoStreak.s2{right:-55%;top:53%;animation-delay:-1.7s;transform:rotate(22deg)}
+.videoStreak.s3{left:-45%;bottom:20%;animation-delay:-3.2s;transform:rotate(-14deg)}
+.scanLine{
+ position:absolute;left:0;right:0;top:-4%;height:2px;
+ background:linear-gradient(90deg,transparent,rgba(255,222,80,.65),transparent);
+ box-shadow:0 0 18px rgba(255,210,30,.45);
+ opacity:.35;animation:scanMove 5s linear infinite;
+}
+.videoVignette{
+ position:absolute;inset:0;
+ background:
+  radial-gradient(ellipse at center,transparent 34%,rgba(0,0,0,.12) 64%,rgba(0,0,0,.62) 100%),
+  radial-gradient(circle at 50% 48%,transparent 20%,rgba(255,205,0,.06) 48%,transparent 70%);
+}
+.videoEnding .videoHalo{animation-duration:.55s!important;transform:translate(-50%,-50%) scale(1.28);opacity:1}
+.videoEnding .videoGrid{opacity:1}
+.videoEnding .videoParticle{opacity:1}
+.videoEnding .videoStreak{opacity:.9}
+@keyframes videoGridMove{
+ from{transform:perspective(520px) rotateX(64deg) translateY(24%)}
+ to{transform:perspective(520px) rotateX(64deg) translateY(4%)}
+}
+@keyframes videoHaloPulse{
+ 0%,100%{transform:translate(-50%,-50%) scale(.96);opacity:.65}
+ 50%{transform:translate(-50%,-50%) scale(1.05);opacity:1}
+}
+@keyframes videoParticleFloat{
+ 0%,100%{transform:translate3d(0,0,0);opacity:.2}
+ 50%{transform:translate3d(18px,-25px,0);opacity:.85}
+}
+@keyframes scanMove{
+ 0%{top:-4%;opacity:0}
+ 12%{opacity:.35}
+ 50%{opacity:.45}
+ 88%{opacity:.25}
+ 100%{top:104%;opacity:0}
+}
+@keyframes videoStreakMove{
+ 0%{transform:translateX(-35vw) rotate(-24deg);opacity:0}
+ 15%{opacity:.35}
+ 70%{opacity:.35}
+ 100%{transform:translateX(150vw) rotate(-24deg);opacity:0}
+}
+
+
+#flash{
+ z-index:30;background:#ffd21a;opacity:0;pointer-events:none
+}
+
+#profile{
+ z-index:5;overflow:hidden;display:flex;align-items:center;justify-content:center;
+ background:
+ radial-gradient(circle at 50% 35%,rgba(255,220,50,.24),transparent 28%),
+ radial-gradient(circle at 10% 90%,rgba(255,180,0,.16),transparent 30%),
+ linear-gradient(145deg,#080808,#171300 55%,#020202);
+ opacity:0;visibility:hidden;transition:opacity .9s ease
+}
+#profile.show{opacity:1;visibility:visible}
+
+.grid{
+ position:absolute;inset:-50%;
+ background-image:linear-gradient(rgba(255,210,30,.045) 1px,transparent 1px),
+ linear-gradient(90deg,rgba(255,210,30,.045) 1px,transparent 1px);
+ background-size:48px 48px;transform:perspective(500px) rotateX(62deg) translateY(25%);
+ animation:gridMove 10s linear infinite
+}
+.orb{
+ position:absolute;border-radius:50%;filter:blur(2px);border:1px solid rgba(255,214,40,.2);
+ box-shadow:0 0 60px rgba(255,202,0,.16) inset,0 0 80px rgba(255,202,0,.08);
+ animation:float 7s ease-in-out infinite
+}
+.o1{width:55vw;height:55vw;max-width:440px;max-height:440px;top:-18%;right:-12%}
+.o2{width:40vw;height:40vw;max-width:320px;max-height:320px;bottom:-12%;left:-15%;animation-delay:-3s}
+
+.content{position:relative;z-index:3;width:min(94vw,540px);text-align:center;padding:25px}
+.badge{
+ display:inline-block;padding:7px 13px;border:1px solid rgba(255,220,60,.4);border-radius:999px;
+ color:#ffe36b;font-size:9px;letter-spacing:3px;text-transform:uppercase;background:rgba(255,205,0,.06);
+ backdrop-filter:blur(10px);opacity:0;transform:translateY(15px)
+}
+#profile.show .badge{animation:rise .8s .25s forwards}
+
+#reveal{
+ margin:18px 0 5px;color:#fff;font-size:clamp(34px,10vw,68px);line-height:.9;letter-spacing:-3px;
+ text-shadow:0 0 30px rgba(255,211,0,.3);overflow:hidden
+}
+.revealWord{display:block;opacity:0;transform:translateY(110%) skewY(8deg);filter:blur(12px)}
+#profile.show .revealWord{animation:wordReveal 1s cubic-bezier(.16,1,.3,1) forwards}
+#profile.show .revealWord:nth-child(2){animation-delay:.12s}
+
+.sub{
+ margin-top:10px;color:rgba(255,255,255,.6);font-size:11px;letter-spacing:4px;text-transform:uppercase;
+ opacity:0
+}
+#profile.show .sub{animation:rise .8s .65s forwards}
+
+.line{height:1px;width:80px;margin:22px auto;background:linear-gradient(90deg,transparent,#ffd21a,transparent);transform:scaleX(0)}
+#profile.show .line{animation:lineIn .7s .8s forwards}
+
+.phone{
+ display:block;color:#fff;text-decoration:none;font-weight:850;font-size:clamp(25px,8vw,47px);
+ letter-spacing:2px;text-shadow:0 0 22px rgba(255,211,0,.45);opacity:0;transform:scale(.86)
+}
+#profile.show .phone{animation:phoneIn 1s 1s cubic-bezier(.16,1,.3,1) forwards,lux 2.4s 2s ease-in-out infinite}
+
+.actions{display:flex;gap:12px;justify-content:center;margin-top:22px}
+.btn{
+ flex:1;max-width:210px;padding:16px 18px;border-radius:18px;text-decoration:none;font-weight:850;
+ font-size:13px;letter-spacing:.5px;border:1px solid rgba(255,255,255,.18);color:#111;
+ background:linear-gradient(135deg,#ffe36b,#e9ad00);box-shadow:0 12px 35px rgba(0,0,0,.35),0 0 30px rgba(255,210,30,.15);
+ opacity:0;transform:translateY(25px);transition:transform .2s ease
+}
+.btn.wa{background:linear-gradient(135deg,#fff,#e9e9e9)}
+#profile.show .btn{animation:rise .75s 1.35s forwards}
+#profile.show .btn.wa{animation-delay:1.48s}
+.btn:active{transform:scale(.94)}
+
+.small{margin-top:20px;color:rgba(255,255,255,.38);font-size:9px;letter-spacing:2px;text-transform:uppercase;opacity:0}
+#profile.show .small{animation:rise .7s 1.7s forwards}
+
+/* Interactive action animation layer */
+#actionFx{z-index:40;pointer-events:none;display:none;overflow:hidden}
+#actionFx.active{display:block}
+.actionWash{position:absolute;inset:0;background:#ffd21a;opacity:0}
+#actionFx.call .actionWash{animation:wash .75s ease-out forwards}
+.ring{
+ position:absolute;left:50%;top:50%;width:30px;height:30px;border-radius:50%;
+ border:2px solid rgba(255,220,60,.9);transform:translate(-50%,-50%) scale(.1);opacity:0;
+ box-shadow:0 0 35px rgba(255,210,30,.4)
+}
+#actionFx.active .ring{animation:ringOut 1s cubic-bezier(.1,.6,.2,1) forwards}
+.r2{animation-delay:.12s!important}.r3{animation-delay:.24s!important}.r4{animation-delay:.36s!important}
+.spark{
+ position:absolute;left:50%;top:50%;width:4px;height:4px;border-radius:50%;
+ background:#ffe56a;box-shadow:0 0 16px #ffd21a;opacity:0
+}
+#actionFx.active .spark{animation:sparkOut .8s ease-out forwards}
+.s1{--x:-120px;--y:-160px}.s2{--x:140px;--y:-130px}.s3{--x:-180px;--y:70px}.s4{--x:180px;--y:100px}
+.s5{--x:-70px;--y:180px}.s6{--x:70px;--y:-190px}
+
+
+.upiModal{
+ position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;
+ padding:18px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s ease,visibility .35s
+}
+.upiModal.open{opacity:1;visibility:visible;pointer-events:auto}
+.upiBackdrop{
+ position:absolute;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(18px)
+}
+.upiCard{
+ position:relative;z-index:2;width:min(92vw,390px);max-height:92%;
+ overflow:hidden;padding:25px 20px 20px;text-align:center;color:#fff;border-radius:30px;
+ border:1px solid rgba(255,218,55,.28);
+ background:linear-gradient(145deg,rgba(35,31,8,.98),rgba(8,8,8,.99));
+ box-shadow:0 30px 100px rgba(0,0,0,.65),0 0 70px rgba(255,205,0,.12);
+ transform:translateY(35px) scale(.92);transition:transform .55s cubic-bezier(.16,1,.3,1)
+}
+.upiModal.open .upiCard{transform:translateY(0) scale(1)}
+.upiClose{
+ position:absolute;right:14px;top:12px;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.15);
+ background:rgba(255,255,255,.06);color:#fff;font-size:28px;line-height:1
+}
+.upiSpark{
+ width:48px;height:48px;margin:0 auto 10px;border-radius:16px;display:grid;place-items:center;
+ color:#111;font-weight:950;font-size:22px;background:linear-gradient(145deg,#fff0a0,#e9ad00);
+ box-shadow:0 0 35px rgba(255,210,30,.22);animation:payPulse 1.8s infinite
+}
+.upiKicker{font-size:8px;letter-spacing:3px;color:#ffe36b}
+.upiCard h2{margin:8px 0 3px;font-size:28px;letter-spacing:-1px}
+.upiHint{margin:0 0 16px;color:rgba(255,255,255,.5);font-size:11px}
+.qrWrap{
+ position:relative;width:190px;height:190px;margin:0 auto 17px;padding:12px;background:#fff;border-radius:20px;
+ box-shadow:0 0 45px rgba(255,210,30,.15);display:grid;place-items:center
+}
+#upiQr{width:166px;height:166px;position:relative;z-index:2}
+#upiQr img,#upiQr canvas{width:166px!important;height:166px!important;display:block}
+.qrGlow{position:absolute;inset:-5px;border-radius:24px;border:1px solid rgba(255,216,45,.35);animation:qrPulse 2s infinite}
+.upiRow{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;margin-top:9px;
+ border-radius:15px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);text-align:left
+}
+.upiRow div{min-width:0}.upiRow span{display:block;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:3px}
+.upiRow strong{font-size:13px;word-break:break-all}
+.copyBtn{
+ min-width:65px;padding:9px 8px;border-radius:10px;border:1px solid rgba(255,210,30,.3);
+ background:rgba(255,205,0,.09);color:#ffe36b;font-size:9px;font-weight:900;letter-spacing:1px
+}
+.upiOpen{
+ display:block;margin-top:14px;padding:15px;border-radius:15px;text-decoration:none;font-weight:900;font-size:12px;
+ letter-spacing:1.5px;color:#111;background:linear-gradient(135deg,#fff0a0,#ffd21a,#e7a900);
+ box-shadow:0 10px 30px rgba(255,202,0,.16)
+}
+.copyStatus{height:15px;margin-top:8px;font-size:9px;color:#ffe36b;letter-spacing:1px}
+.pay{border:1px solid rgba(255,220,60,.28);background:linear-gradient(135deg,#fff0a0,#ffd21a)!important}
+@keyframes payPulse{50%{transform:scale(1.08);box-shadow:0 0 55px rgba(255,210,30,.42)}}
+@keyframes qrPulse{50%{transform:scale(1.015);opacity:.7}}
+@media(max-width:480px){
+ .upiCard{padding:22px 15px 16px}.qrWrap{width:175px;height:175px}.qrWrap #upiQr,.qrWrap #upiQr img,.qrWrap #upiQr canvas{width:151px!important;height:151px!important}
+ .actions{flex-wrap:wrap}.actions .btn{min-width:29%}
+}
+
+@keyframes gatePulse{50%{transform:scale(1.08);opacity:.65}}
+@keyframes buttonPulse{50%{transform:scale(1.025);box-shadow:0 14px 55px rgba(255,202,0,.38)}}
+@keyframes gridMove{to{transform:perspective(500px) rotateX(62deg) translateY(10%)}}
+@keyframes float{50%{transform:translate(20px,-25px) scale(1.04)}}
+@keyframes rise{to{opacity:1;transform:translateY(0)}}
+@keyframes wordReveal{to{opacity:1;transform:translateY(0) skewY(0);filter:blur(0)}}
+@keyframes lineIn{to{transform:scaleX(1)}}
+@keyframes phoneIn{to{opacity:1;transform:scale(1)}}
+@keyframes lux{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+@keyframes ringOut{0%{opacity:.9;transform:translate(-50%,-50%) scale(.1)}100%{opacity:0;transform:translate(-50%,-50%) scale(22)}}
+@keyframes sparkOut{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}15%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(0)}}
+@keyframes wash{0%{opacity:0}18%{opacity:.3}100%{opacity:0}}
+@media(max-width:480px){.content{padding:20px}.actions{gap:9px}.btn{padding:15px 10px}}
+@media(prefers-reduced-motion:reduce){
+ .gateGlow,.enter,.grid,.orb,.videoGrid,.videoHalo,.videoParticle,.videoStreak{animation:none}
+ #profile.show .badge,#profile.show .revealWord,#profile.show .sub,#profile.show .line,#profile.show .phone,#profile.show .btn,#profile.show .small{animation:none;opacity:1;transform:none;filter:none}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<section id="gate">
+ <div class="gateGlow"></div>
+ <div class="gateContent">
+  <div class="logo">AUTO</div>
+  <div class="kicker">A premium experience awaits</div>
+  <button class="enter" id="enterBtn" type="button">TOUCH HERE TO ENTER</button>
+  <div class="hint">Touch once • sound starts automatically</div>
+ </div>
+</section>
+
+<section id="intro">
+ <div class="videoFrame">
+  <video id="heroVideo"
+   src="https://ap095665-boop.github.io/Auto/km_20260825_720p_30f_20260825_160452.webm"
+   playsinline preload="auto"></video>
+ </div>
+
+ <!-- Animation is intentionally ABOVE the video -->
+ <div class="videoOverlay" aria-hidden="true">
+  <div class="videoGrid"></div>
+  <div class="videoHalo"></div>
+  <div class="videoHalo halo2"></div>
+
+  <div class="videoParticle p1"></div><div class="videoParticle p2"></div>
+  <div class="videoParticle p3"></div><div class="videoParticle p4"></div>
+  <div class="videoParticle p5"></div><div class="videoParticle p6"></div>
+
+  <div class="videoStreak s1"></div><div class="videoStreak s2"></div>
+  <div class="videoStreak s3"></div>
+
+  <div class="scanLine"></div>
+  <div class="videoVignette"></div>
+ </div>
+</section>
+
+<div id="flash"></div>
+
+<main id="profile">
+ <div class="grid"></div><div class="orb o1"></div><div class="orb o2"></div>
+ <div class="content">
+  <span class="badge">Premium Auto Service</span>
+
+  <h1 id="reveal">
+   <span class="revealWord">YOUR RIDE</span>
+   <span class="revealWord">AWAITS</span>
+  </h1>
+
+  <div class="sub">Your ride • Your comfort</div>
+  <div class="line"></div>
+
+  <!-- CHANGE PHONE NUMBER IN ALL 3 PLACES BELOW -->
+  <a class="phone" id="phoneNumber" href="tel:+919999999999">+91 99999 99999</a>
+
+  <div class="actions">
+   <a class="btn" id="callBtn" href="tel:+919999999999">☎ CALL NOW</a>
+   <!-- CHANGE WHATSAPP NUMBER HERE -->
+   <a class="btn wa" id="waBtn" href="https://wa.me/919999999999" target="_blank" rel="noopener">◉ WHATSAPP</a>
+   <button class="btn pay" id="payBtn" type="button">₹ PAY UPI</button>
+  </div>
+  <div class="small">Available for your next ride</div>
+ </div>
+</main>
+
+
+<div id="upiModal" class="upiModal" aria-hidden="true">
+ <div class="upiBackdrop" id="upiBackdrop"></div>
+ <div class="upiCard" role="dialog" aria-modal="true" aria-label="Pay with UPI">
+  <button class="upiClose" id="upiClose" type="button" aria-label="Close">×</button>
+  <div class="upiSpark">₹</div>
+  <div class="upiKicker">SECURE DIRECT PAYMENT</div>
+  <h2>PAY WITH UPI</h2>
+  <p class="upiHint">Scan the QR or copy the payment details.</p>
+  <div class="qrWrap"><div id="upiQr"></div><div class="qrGlow"></div></div>
+
+  <div class="upiRow">
+   <div><span>UPI ID</span><strong id="upiId">autodemo@upi</strong></div>
+   <button class="copyBtn" data-copy="upiId" type="button">COPY</button>
+  </div>
+  <div class="upiRow">
+   <div><span>UPI NUMBER</span><strong id="upiNumber">9999999999</strong></div>
+   <button class="copyBtn" data-copy="upiNumber" type="button">COPY</button>
+  </div>
+
+  <a class="upiOpen" id="upiOpen" href="upi://pay?pa=autodemo@upi&pn=Auto%20Bio" >OPEN UPI APP</a>
+  <div class="copyStatus" id="copyStatus" aria-live="polite"></div>
+ </div>
+</div>
+
+<div id="actionFx" aria-hidden="true">
+ <div class="actionWash"></div>
+ <div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div>
+ <i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i>
+ <i class="spark s4"></i><i class="spark s5"></i><i class="spark s6"></i>
+</div>
+
+<script>
+const gate=document.getElementById('gate');
+const enterBtn=document.getElementById('enterBtn');
+const intro=document.getElementById('intro');
+const video=document.getElementById('heroVideo');
+const flash=document.getElementById('flash');
+const profile=document.getElementById('profile');
+const actionFx=document.getElementById('actionFx');
+const callBtn=document.getElementById('callBtn');
+const waBtn=document.getElementById('waBtn');
+
+let started=false,finished=false,actionBusy=false;
+
+async function enterExperience(){
+ if(started)return;
+ started=true;
+ enterBtn.disabled=true;
+
+ // This click/touch is a real user gesture, allowing sound autoplay.
+ video.muted=false;
+ video.volume=1;
+
+ gate.style.opacity='0';
+ gate.style.visibility='hidden';
+ intro.style.opacity='1';
+ intro.style.visibility='visible';
+
+ try{
+  await video.play();
+ }catch(e){
+  // Fallback only if the browser refuses sound for another reason.
+  video.muted=true;
+  await video.play().catch(()=>{});
+ }
+}
+enterBtn.addEventListener('click',enterExperience);
+enterBtn.addEventListener('touchend',e=>{e.preventDefault();enterExperience()},{passive:false});
+
+function finishExperience(){
+ if(finished)return;
+ finished=true;
+ const overlay=document.querySelector('.videoOverlay');
+ if(overlay) overlay.classList.add('videoEnding');
+
+ // Strong end-of-video yellow light burst.
+ flash.style.transition='opacity .12s ease';
+ flash.style.opacity='1';
+
+ setTimeout(()=>{
+  profile.classList.add('show');
+  intro.style.opacity='0';
+  intro.style.visibility='hidden';
+  flash.style.transition='opacity 1.25s cubic-bezier(.2,.8,.2,1)';
+  flash.style.opacity='0';
+ },170);
+}
+video.addEventListener('ended',finishExperience);
+video.addEventListener('timeupdate',()=>{
+ if(video.duration && video.currentTime>=video.duration-.08)finishExperience();
+});
+
+function playActionAnimation(kind,callback){
+ if(actionBusy)return;
+ actionBusy=true;
+ actionFx.className='active '+kind;
+
+ setTimeout(()=>{
+  actionFx.className='';
+  actionBusy=false;
+  if(callback)callback();
+ },900);
+}
+
+// Call: animation first, then native phone action.
+callBtn.addEventListener('click',e=>{
+ e.preventDefault();
+ playActionAnimation('call',()=>{window.location.href=callBtn.href});
+});
+
+// WhatsApp gets the same premium transition before opening.
+waBtn.addEventListener('click',e=>{
+ e.preventDefault();
+ const url=waBtn.href;
+ playActionAnimation('call',()=>{window.open(url,'_blank','noopener')});
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+const payBtn=document.getElementById('payBtn');
+const upiModal=document.getElementById('upiModal');
+const upiClose=document.getElementById('upiClose');
+const upiBackdrop=document.getElementById('upiBackdrop');
+const copyStatus=document.getElementById('copyStatus');
+
+const UPI_ID='autodemo@upi';       // CHANGE THIS
+const UPI_NUMBER='9999999999';     // CHANGE THIS
+const PAYEE_NAME='Auto Bio';       // CHANGE THIS
+
+function openUpi(){
+  playActionAnimation('call',()=>{
+    upiModal.classList.add('open');
+    upiModal.setAttribute('aria-hidden','false');
+    document.getElementById('upiId').textContent=UPI_ID;
+    document.getElementById('upiNumber').textContent=UPI_NUMBER;
+
+    const qr=document.getElementById('upiQr');
+    qr.innerHTML='';
+    if(window.QRCode){
+      new QRCode(qr,{
+        text:'upi://pay?pa='+encodeURIComponent(UPI_ID)+'&pn='+encodeURIComponent(PAYEE_NAME),
+        width:166,height:166,colorDark:'#111111',colorLight:'#ffffff',
+        correctLevel:QRCode.CorrectLevel.H
+      });
+    }
+    document.getElementById('upiOpen').href=
+      'upi://pay?pa='+encodeURIComponent(UPI_ID)+'&pn='+encodeURIComponent(PAYEE_NAME);
+  });
+}
+function closeUpi(){
+  upiModal.classList.remove('open');
+  upiModal.setAttribute('aria-hidden','true');
+  copyStatus.textContent='';
+}
+payBtn.addEventListener('click',e=>{e.preventDefault();openUpi()});
+upiClose.addEventListener('click',closeUpi);
+upiBackdrop.addEventListener('click',closeUpi);
+
+document.querySelectorAll('.copyBtn').forEach(btn=>{
+ btn.addEventListener('click',async()=>{
+  const value=document.getElementById(btn.dataset.copy).textContent.trim();
+  try{
+   await navigator.clipboard.writeText(value);
+   copyStatus.textContent='COPIED ✓';
+  }catch(e){
+   const ta=document.createElement('textarea');
+   ta.value=value;document.body.appendChild(ta);ta.select();
+   document.execCommand('copy');ta.remove();
+   copyStatus.textContent='COPIED ✓';
+  }
+  setTimeout(()=>copyStatus.textContent='',1600);
+ });
+});
+</script>
+</body>
+</html>
