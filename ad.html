@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shop Manager — Admin</title>
+<style>
+
+:root{--r:#e30d40;--r2:#ff416b;--bg:#070307;--glass:rgba(255,255,255,.09);--line:rgba(255,255,255,.17);--muted:#cbbbc0}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:#fff;font-family:Inter,system-ui,sans-serif}body{min-height:100vh;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:-20%;z-index:-5;background:radial-gradient(circle at 50% 25%,#ef174d,transparent 34%),radial-gradient(circle at 15% 80%,#8d0829,transparent 35%),#080308;animation:aurora 9s ease-in-out infinite alternate}
+body:after{content:"";position:fixed;inset:-20px;z-index:-4;background:linear-gradient(100deg,#000b,#0002,#000b),url("https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=2000&q=85") center/cover;filter:blur(16px);opacity:.43}
+@keyframes aurora{to{transform:scale(1.12) rotate(3deg)}}@keyframes tap{0%{transform:scale(1)}40%{transform:scale(.92)}70%{transform:scale(1.03)}100%{transform:scale(1)}}@keyframes pulse{50%{box-shadow:0 0 0 11px #ff315e00}}
+.wrap{width:min(1160px,100%);margin:auto;padding:20px}.nav{display:flex;justify-content:space-between;align-items:center}.brand{font-size:12px;font-weight:950;letter-spacing:.22em}.status{display:flex;gap:8px;align-items:center;padding:9px 13px;border:1px solid var(--line);background:#ffffff0d;backdrop-filter:blur(18px);border-radius:999px;font-size:11px;font-weight:900}.status i{width:8px;height:8px;border-radius:50%;background:#40f49a;box-shadow:0 0 14px #40f49a;animation:pulse 1.8s infinite}.status.closed i{background:#ff315e;box-shadow:0 0 14px #ff315e}
+.hero{min-height:75vh;display:grid;place-items:center;text-align:center;position:relative}.orb{position:absolute;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#ff91a8,#e30d40 32%,#65041d 65%,transparent 70%);filter:blur(2px);opacity:.7;animation:float 6s ease-in-out infinite;z-index:-1}@keyframes float{50%{transform:translateY(-13px)}}
+.eyebrow{font-size:11px;letter-spacing:.25em;color:#d8c8cc;font-weight:900}.hero h1{font-size:clamp(58px,12vw,150px);line-height:.78;letter-spacing:-.09em;margin:22px 0;font-weight:1000;text-shadow:0 25px 70px #000}.hero p{max-width:620px;color:var(--muted);font-size:17px;margin:0 auto 28px}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#ffffff0d;color:#fff;border-radius:16px;padding:13px 17px;font-weight:850;text-decoration:none;cursor:pointer;backdrop-filter:blur(18px);transition:.15s}.btn:active{animation:tap .34s ease}.btn.primary{background:linear-gradient(135deg,var(--r2),var(--r));border-color:transparent;box-shadow:0 15px 45px #e30d4038}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:10px 0 65px}.card{padding:20px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(22px);border-radius:24px}.label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#ab9ca0}.value{font-weight:900;font-size:17px;margin-top:7px}footer{text-align:center;border-top:1px solid var(--line);padding:25px 0 35px;color:#bcaeb2;font-size:13px}.admin-link{margin-top:12px;background:none;border:0;color:#fff;text-decoration:underline;text-underline-offset:5px;font-weight:850;cursor:pointer}
+.overlay{position:fixed;inset:0;z-index:50;background:#030003d9;backdrop-filter:blur(22px);display:none;align-items:center;justify-content:center;padding:9px}.overlay.show{display:flex}.popup{width:min(850px,100%);height:min(780px,calc(100dvh - 18px));border:1px solid var(--line);border-radius:30px;background:linear-gradient(145deg,#430718ed,#090509f5);box-shadow:0 40px 120px #000;position:relative;overflow:hidden}.popup:before{content:"";position:absolute;width:360px;height:360px;border-radius:50%;right:-120px;top:-150px;background:#e30d40;filter:blur(80px);opacity:.4}.close{position:absolute;right:14px;top:14px;z-index:5;width:45px;height:45px;border-radius:50%;border:1px solid var(--line);background:#0006;color:#fff;font-size:23px;cursor:pointer}.popup-inner{height:100%;display:flex;flex-direction:column;padding:clamp(20px,4vw,38px);position:relative}.popup-kicker{font-size:10px;letter-spacing:.2em;color:#ff8ba0;font-weight:950}.popup h2.big{font-size:clamp(38px,7vw,70px);line-height:.9;letter-spacing:-.06em;margin:9px 0 18px}.slides{flex:1;min-height:0;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.slides::-webkit-scrollbar{display:none}.slide{min-width:100%;scroll-snap-align:center;border:1px solid var(--line);background:#ffffff0a;border-radius:24px;padding:clamp(20px,5vw,45px);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;overflow:auto}.slide h3{font-size:clamp(42px,9vw,84px);line-height:.9;letter-spacing:-.07em;margin:8px 0 18px}.slide p{max-width:680px;color:#d9c9cd;font-size:17px;line-height:1.55;margin:0 0 18px}.timer{font-size:clamp(34px,8vw,68px);font-weight:1000;font-variant-numeric:tabular-nums;word-break:break-word}.small{font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:#9e8f94;line-height:1.5}.old{text-decoration:line-through;color:#928389}.deal{color:#ff6a87;font-size:28px;font-weight:1000}.hint{text-align:center;color:#998a8f;font-size:11px;padding-top:9px}
+.admin{width:min(650px,100%);max-height:92dvh;overflow:auto;border:1px solid var(--line);border-radius:28px;background:#0a0509f7;padding:24px}.admin h2{font-size:34px;letter-spacing:-.05em;margin:5px 0 18px}.field{margin:12px 0}.field label{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#aa9b9f;margin-bottom:7px}.field input,.field textarea{width:100%;border:1px solid var(--line);background:#ffffff09;color:#fff;border-radius:14px;padding:13px;outline:none}.field textarea{min-height:110px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:16px 0 10px}.tabs button{border:1px solid var(--line);background:#ffffff09;color:#fff;border-radius:15px;padding:13px 6px;font-weight:900}.section{display:none;border:1px solid var(--line);background:#ffffff06;border-radius:20px;padding:15px}.section.on{display:block}.note{font-size:12px;line-height:1.5;color:#e2d5d8;background:#e30d4015;border:1px solid #e30d4040;padding:12px;border-radius:15px}.hidden{display:none!important}.toast{position:fixed;z-index:100;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;color:#16080d;padding:12px 17px;border-radius:999px;font-weight:900;font-size:12px;display:none}.toast.show{display:block}
+@media(max-width:650px){.wrap{padding:15px}.grid{grid-template-columns:1fr}.hero{min-height:72vh}.hero h1{font-size:68px}.popup{height:calc(100dvh - 16px);border-radius:25px}.popup-inner{padding:20px 15px 14px}.popup h2.big{font-size:42px;padding-right:50px}.slide{padding:22px 18px}.slide h3{font-size:clamp(40px,12vw,62px)}.slide p{font-size:16px}.tabs button{font-size:12px}}
+
+.admin-page{min-height:100dvh;display:grid;place-items:center;padding:20px}
+.admin-wrap{width:min(650px,100%)}
+.admin{width:100%;max-height:none}
+.dashboard .section{margin-top:10px}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logout{font-size:12px;padding:9px 12px}
+.shop-url{word-break:break-all}
+</style>
+</head>
+<body>
+<main class="admin-page">
+<div class="admin-wrap">
+<div class="admin" id="adminCard">
+<div class="popup-kicker">OWNER CONTROL</div>
+<h2>Shop Manager</h2>
+
+<div id="loginBox">
+<div class="note">
+This is the private owner administration page.
+<br><br>
+<strong>Account creation is disabled here.</strong>
+New owner accounts should be created by the administrator in Supabase Authentication.
+</div>
+
+<div class="field">
+<label>Email</label>
+<input id="email" type="email" autocomplete="username" placeholder="owner@example.com">
+</div>
+
+<div class="field">
+<label>Password</label>
+<input id="password" type="password" autocomplete="current-password" placeholder="Your password">
+</div>
+
+<button class="btn primary" id="login" style="width:100%">Sign in</button>
+</div>
+
+<div id="dashboard" class="hidden">
+<div class="header-row">
+<div>
+<div class="popup-kicker">CONNECTED SHOP</div>
+<h2 id="shopName">Shop</h2>
+</div>
+<button class="btn logout" id="logout">Sign out</button>
+</div>
+
+<div class="note shop-url" id="dbNote">Loading…</div>
+
+<div class="tabs">
+<button data-tab="closedSec">🔴 Closed</button>
+<button data-tab="offerSec">🏷 Offer</button>
+<button data-tab="infoSec">ℹ Info</button>
+</div>
+
+<section class="section" id="closedSec">
+<div class="field">
+<label>Reopen at</label>
+<input id="reopen" type="time">
+</div>
+<div class="field">
+<label>Customer message</label>
+<input id="closedMsg" placeholder="We'll reopen at 6 AM.">
+</div>
+<button class="btn primary" id="saveClosed">Mark Closed & Publish</button>
+</section>
+
+<section class="section" id="offerSec">
+<div class="field">
+<label>Product / service</label>
+<input id="offerName" placeholder="Premium Shirt">
+</div>
+<div class="field">
+<label>Original price</label>
+<input id="offerOld" placeholder="₹999">
+</div>
+<div class="field">
+<label>Offer / discount</label>
+<input id="offerDeal" placeholder="₹699 or 30% OFF">
+</div>
+<div class="field">
+<label>Offer ends</label>
+<input id="offerEnd" type="datetime-local">
+</div>
+<div class="field">
+<label>Offer message</label>
+<textarea id="offerMsg"></textarea>
+</div>
+<button class="btn primary" id="saveOffer">Publish Offer</button>
+</section>
+
+<section class="section" id="infoSec">
+<div class="field">
+<label>Information title</label>
+<input id="infoTitle" placeholder="Today's notice">
+</div>
+<div class="field">
+<label>Custom information</label>
+<textarea id="infoMsg"></textarea>
+</div>
+<button class="btn primary" id="saveInfo">Publish Info</button>
+</section>
+</div>
+</div>
+</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL="https://wzoatpjewfphxcclxpmz.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6b2F0cGpld2ZwaHhjY2x4cG16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MjE5MDksImV4cCI6MjEwNTM5NzkwOX0.MpcEGav98i-wAWgsD3ep8DNcUr-Jg0N-hYm4bTWFTqU";
+
+let token=null,shop=null;
+
+const $=x=>document.getElementById(x);
+const toast=t=>{ $("toast").textContent=t;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2200) };
+const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const nextTime=t=>{let [h,m]=t.split(":").map(Number),n=new Date(),x=new Date(n);x.setHours(h,m,0,0);if(x<=n)x.setDate(x.getDate()+1);return x.toISOString()};
+
+async function sb(path,opts={}){
+ const r=await fetch(SUPABASE_URL+"/rest/v1/"+path,{...opts,headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+token,"Content-Type":"application/json",...(opts.headers||{})}});
+ if(!r.ok)throw Error(await r.text());
+ return r.status===204?null:r.json();
+}
+
+async function auth(email,password){
+ if(!email||!password)throw Error("Enter email and password.");
+ const r=await fetch(SUPABASE_URL+"/auth/v1/token?grant_type=password",{
+   method:"POST",
+   headers:{"apikey":SUPABASE_ANON_KEY,"Content-Type":"application/json"},
+   body:JSON.stringify({email,password})
+ });
+ let j={};
+ try{j=await r.json()}catch(e){}
+ if(!r.ok)throw Error(j.msg||j.error_description||j.message||"Invalid login credentials");
+ if(!j.access_token)throw Error("No session returned.");
+ token=j.access_token;
+ return j;
+}
+
+async function me(){
+ const r=await fetch(SUPABASE_URL+"/auth/v1/user",{
+   headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+token}
+ });
+ if(!r.ok)throw Error("Session expired.");
+ return r.json();
+}
+
+async function ensureShop(){
+ const user=await me();
+ const rows=await sb("shops?owner_id=eq."+encodeURIComponent(user.id)+"&select=*");
+ if(!rows.length)throw Error("No shop is assigned to this owner yet. Create the shop in Supabase first.");
+ return rows[0];
+}
+
+async function update(fields){
+ await sb("shops?id=eq."+encodeURIComponent(shop.id),{
+   method:"PATCH",
+   headers:{"Prefer":"return=representation"},
+   body:JSON.stringify(fields)
+ });
+ shop={...shop,...fields};
+ toast("Published successfully.");
+}
+
+async function openDashboard(){
+ shop=await ensureShop();
+ $("loginBox").classList.add("hidden");
+ $("dashboard").classList.remove("hidden");
+ $("shopName").textContent=shop.shop_name;
+ $("dbNote").innerHTML="Customer URL:<br><strong>"+esc(location.origin.replace(/\/admin\.html$/,"")+"/s.html?shop="+(shop.slug||""))+"</strong>";
+}
+
+$("login").onclick=async()=>{
+ try{
+   await auth($("email").value.trim(),$("password").value);
+   await openDashboard();
+ }catch(e){
+   console.error(e);
+   toast(e.message);
+ }
+};
+
+$("logout").onclick=()=>{
+ token=null;shop=null;
+ $("dashboard").classList.add("hidden");
+ $("loginBox").classList.remove("hidden");
+ $("password").value="";
+};
+
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".section").forEach(x=>x.classList.remove("on"));
+ $(b.dataset.tab).classList.add("on");
+});
+
+$("saveClosed").onclick=async()=>{
+ if(!$("reopen").value)return toast("Choose reopening time.");
+ try{
+   await update({
+     status:"closed",
+     reopen_at:nextTime($("reopen").value),
+     closed_message:$("closedMsg").value||"We'll reopen when we're ready."
+   });
+ }catch(e){toast(e.message)}
+};
+
+$("saveOffer").onclick=async()=>{
+ if(!$("offerName").value||!$("offerEnd").value)return toast("Add product and end time.");
+ try{
+   await update({
+     offer:{
+       name:$("offerName").value,
+       oldPrice:$("offerOld").value,
+       deal:$("offerDeal").value,
+       message:$("offerMsg").value,
+       endAt:new Date($("offerEnd").value).toISOString()
+     }
+   });
+ }catch(e){toast(e.message)}
+};
+
+$("saveInfo").onclick=async()=>{
+ if(!$("infoTitle").value||!$("infoMsg").value)return toast("Add title and information.");
+ try{
+   await update({
+     info:{
+       title:$("infoTitle").value,
+       message:$("infoMsg").value,
+       createdAt:new Date().toISOString()
+     }
+   });
+ }catch(e){toast(e.message)}
+};
+</script>
+</body>
+</html>
