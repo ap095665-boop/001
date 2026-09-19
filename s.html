@@ -63,9 +63,12 @@ async function sb(path,opts={}){
 }
 async function auth(action,email,password){
  if(!SUPABASE_URL.startsWith("http"))throw Error("Add Supabase credentials in the HTML.");
- let endpoint=action==="signup"
+ if(!email||!password)throw Error("Enter email and password.");
+
+ const endpoint=action==="signup"
    ? "/auth/v1/signup"
    : "/auth/v1/token?grant_type=password";
+
  const r=await fetch(SUPABASE_URL+endpoint,{
    method:"POST",
    headers:{
@@ -74,8 +77,24 @@ async function auth(action,email,password){
    },
    body:JSON.stringify({email,password})
  });
- const j=await r.json();
- if(!r.ok)throw Error(j.msg||j.error_description||j.message||"Authentication failed");
+
+ let j={};
+ try{ j=await r.json(); }catch(e){}
+
+ if(!r.ok){
+   throw Error(
+     j.msg ||
+     j.error_description ||
+     j.message ||
+     j.error ||
+     ("Supabase Auth error ("+r.status+")")
+   );
+ }
+
+ if(action!=="signup" && !j.access_token){
+   throw Error("Login did not return a session. Verify your email first, then sign in again.");
+ }
+
  if(j.access_token)token=j.access_token;
  return j;
 }
@@ -181,8 +200,44 @@ function activeSignature(){
 }
 $("updates").onclick=()=>{$("customerOverlay").classList.add("show");renderSlides()};$("customerClose").onclick=()=>$("customerOverlay").classList.remove("show");
 $("adminOpen").onclick=()=>$("adminOverlay").classList.add("show");$("adminClose").onclick=()=>$("adminOverlay").classList.remove("show");
-$("login").onclick=async()=>{try{const email=$("email").value.trim(),password=$("password").value;if(!email||!password)return toast("Enter email and password.");await auth("token?grant_type=password",email,password);shop=await ensureShop();$("loginBox").classList.add("hidden");$("dashboard").classList.remove("hidden");$("dbNote").innerHTML="Connected to <b>"+esc(shop.shop_name)+"</b><br><span style='font-size:12px;color:#cbbbc0'>Customer URL: "+esc(location.origin+location.pathname+"?shop="+(shop.slug||""))+"</span>";toast("Signed in");}catch(e){toast(e.message)}};
-$("signup").onclick=async()=>{try{const email=$("email").value.trim(),password=$("password").value;if(!email||!password)return toast("Enter email and password.");if(password.length<6)return toast("Password must be at least 6 characters.");await auth("signup",email,password);toast("Account created. Check email if confirmation is enabled.");}catch(e){toast(e.message)}};
+$("login").onclick=async()=>{
+ try{
+   const email=$("email").value.trim(),password=$("password").value;
+   if(!email||!password)return toast("Enter email and password.");
+
+   await auth("token?grant_type=password",email,password);
+
+   if(!token)throw Error("No login session was returned by Supabase.");
+
+   shop=await ensureShop();
+   $("loginBox").classList.add("hidden");
+   $("dashboard").classList.remove("hidden");
+   $("dbNote").innerHTML="Connected to <b>"+esc(shop.shop_name)+"</b><br><span style='font-size:12px;color:#cbbbc0'>Customer URL: "+esc(location.origin+location.pathname+"?shop="+(shop.slug||""))+"</span>";
+   toast("Signed in");
+ }catch(e){
+   console.error("Login error:",e);
+   toast(e.message||"Login failed.");
+ }
+};
+$("signup").onclick=async()=>{
+ try{
+   const email=$("email").value.trim(),password=$("password").value;
+   if(!email||!password)return toast("Enter email and password.");
+   if(password.length<6)return toast("Password must be at least 6 characters.");
+
+   const result=await auth("signup",email,password);
+
+   if(result.access_token){
+     shop=await ensureShop();
+     $("loginBox").classList.add("hidden");
+     $("dashboard").classList.remove("hidden");
+     $("dbNote").innerHTML="Connected to <b>"+esc(shop.shop_name)+"</b><br><span style='font-size:12px;color:#cbbbc0'>Customer URL: "+esc(location.origin+location.pathname+"?shop="+(shop.slug||""))+"</span>";
+     toast("Account created and signed in.");
+   }else{
+     toast("Account created. Check your email, verify it, then Sign in.");
+   }
+ }catch(e){toast(e.message)}
+};
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".section").forEach(x=>x.classList.remove("on"));$(b.dataset.tab).classList.add("on")});
 async function update(fields){
  shop={...shop,...fields};
