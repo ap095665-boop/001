@@ -120,7 +120,7 @@ function render(){
  if(!shop)return;
  $("brand").textContent=shop.shop_name;$("name").innerHTML=esc(shop.shop_name).replace(/\s+/g,"<br>");
  $("type").textContent=shop.store_type;$("type2").textContent=shop.store_type;$("owner").textContent=shop.owner_name;$("phone").textContent=shop.phone;$("address").textContent=shop.address;
- $("call").href="tel:"+shop.phone.replace(/[^\d+]/g,"");$("wa").href="https://wa.me/"+shop.phone.replace(/\D/g,"")+"?text="+encodeURIComponent("Hello, I'd like to enquire.");$("map").href="https://maps.google.com/?q="+encodeURIComponent(shop.address);
+ $("call").href="tel:"+shop.phone.replace(/[^\d+]/g,"");$("wa").href="https://wa.me/"+shop.phone.replace(/\D/g,"")+"?text="+encodeURIComponent("Hello, I'd like to enquire.");$("map").href=(shop.latitude!=null&&shop.longitude!=null)?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(shop.latitude+","+shop.longitude):"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(shop.address||shop.shop_name||"");
  const closed=shop.status==="closed"&&shop.reopen_at&&new Date(shop.reopen_at)>new Date();
  $("status").classList.toggle("closed",!!closed);$("statusText").textContent=closed?"CLOSED":"OPEN";
  $("tagline").textContent=closed?(shop.closed_message||"Shop is currently closed."):"A beautiful digital storefront for your shop.";
