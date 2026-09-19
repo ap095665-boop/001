@@ -66,6 +66,13 @@ New owner accounts should be created by the administrator in Supabase Authentica
   <div class="field"><label>Owner name</label><input id="setupOwnerName" placeholder="Your name"></div>
   <div class="field"><label>Phone</label><input id="setupPhone" type="tel" placeholder="+919999999999"></div>
   <div class="field"><label>Shop address</label><textarea id="setupAddress" placeholder="Your full shop address"></textarea></div>
+  <div class="field">
+    <label>Exact shop location</label>
+    <button class="btn" id="getLocation" type="button" style="width:100%">📍 Get my shop location</button>
+    <div class="note" id="locationStatus" style="margin-top:10px">Stand at the shop and tap the button. Allow location access when asked.</div>
+    <input id="setupLat" type="hidden">
+    <input id="setupLng" type="hidden">
+  </div>
   <button class="btn primary" id="createShop" style="width:100%">Create My Shop</button>
 </div>
 
@@ -80,6 +87,8 @@ New owner accounts should be created by the administrator in Supabase Authentica
 
 <div class="note shop-url" id="dbNote">Loading…</div>
 
+<div class="note" id="savedLocation" style="margin-bottom:10px">📍 Checking shop location…</div>
+<button class="btn" id="updateLocation" type="button" style="width:100%;margin-bottom:14px">📍 Update shop location</button>
 <div class="tabs">
 <button data-tab="closedSec">🔴 Closed</button>
 <button data-tab="offerSec">🏷 Offer</button>
@@ -194,6 +203,8 @@ async function createMyShop(){
  const address=$("setupAddress").value.trim();
 
  if(!name||!type||!owner||!phone||!address) throw Error("Please fill in all shop details.");
+ if(!$("setupLat").value||!$("setupLng").value) throw Error("Please capture the exact shop location first.");
+ if(!$("setupLat").value||!$("setupLng").value) throw Error("Please capture the exact shop location first.");
 
  const r=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_my_shop",{
    method:"POST",
@@ -207,7 +218,9 @@ async function createMyShop(){
      p_store_type:type,
      p_owner_name:owner,
      p_phone:phone,
-     p_address:address
+     p_address:address,
+     p_latitude:$("setupLat").value ? Number($("setupLat").value) : null,
+     p_longitude:$("setupLng").value ? Number($("setupLng").value) : null
    })
  });
  let j=null;
@@ -244,7 +257,25 @@ function showShop(){
  $("shopName").textContent=shop.shop_name;
  const publicPath=location.origin+location.pathname.replace(/admin\.html$/,"s.html");
  $("dbNote").innerHTML="Customer URL:<br><strong>"+esc(publicPath+"?shop="+(shop.slug||""))+"</strong>";
+ $("savedLocation").innerHTML=(shop.latitude!=null&&shop.longitude!=null)
+   ?"📍 Shop location saved<br><span style='font-size:12px;color:#cbbbc0'>"+Number(shop.latitude).toFixed(6)+", "+Number(shop.longitude).toFixed(6)+"</span>"
+   :"⚠️ No exact shop location saved yet.";
 }
+
+$("getLocation").onclick=()=>{
+ if(!navigator.geolocation)return toast("Location is not supported by this browser.");
+ const b=$("getLocation"),s=$("locationStatus");
+ b.disabled=true;b.textContent="📍 Getting location…";s.textContent="Getting high-accuracy GPS position…";
+ navigator.geolocation.getCurrentPosition(p=>{
+   const lat=p.coords.latitude,lng=p.coords.longitude,a=Math.round(p.coords.accuracy);
+   $("setupLat").value=lat;$("setupLng").value=lng;
+   s.innerHTML="✓ Location captured. Accuracy: <b>"+a+" m</b><br>"+lat.toFixed(6)+", "+lng.toFixed(6);
+   b.disabled=false;b.textContent="📍 Update shop location";
+ },e=>{
+   const m=e.code===1?"Location permission was denied. Allow location access and try again.":e.code===2?"Location could not be determined. Turn on GPS/location.":e.code===3?"Location request timed out. Try again.":"Could not get your location.";
+   s.textContent=m;b.disabled=false;b.textContent="📍 Try again";toast(m);
+ },{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+};
 
 $("createShop").onclick=async()=>{
  try{
@@ -263,6 +294,22 @@ $("createShop").onclick=async()=>{
    $("createShop").disabled=false;
    $("createShop").textContent="Create My Shop";
  }
+};
+
+$("updateLocation").onclick=()=>{
+ if(!navigator.geolocation)return toast("Location is not supported by this browser.");
+ const b=$("updateLocation");b.disabled=true;b.textContent="📍 Getting location…";
+ navigator.geolocation.getCurrentPosition(async p=>{
+   try{
+     const lat=p.coords.latitude,lng=p.coords.longitude;
+     await sb("shops?id=eq."+encodeURIComponent(shop.id),{method:"PATCH",headers:{"Prefer":"return=representation"},body:JSON.stringify({latitude:lat,longitude:lng})});
+     shop.latitude=lat;shop.longitude=lng;showShop();toast("Shop location updated.");
+   }catch(e){toast(e.message||"Could not save location.");}
+   finally{b.disabled=false;b.textContent="📍 Update shop location";}
+ },e=>{
+   const m=e.code===1?"Location permission was denied.":e.code===2?"Location could not be determined. Turn on GPS/location.":e.code===3?"Location request timed out.":"Could not get your location.";
+   toast(m);b.disabled=false;b.textContent="📍 Update shop location";
+ },{enableHighAccuracy:true,timeout:20000,maximumAge:0});
 };
 
 $("login").onclick=async()=>{
