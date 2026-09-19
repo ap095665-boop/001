@@ -55,6 +55,20 @@ New owner accounts should be created by the administrator in Supabase Authentica
 <button class="btn primary" id="login" style="width:100%">Sign in</button>
 </div>
 
+
+<div id="setupBox" class="hidden">
+  <div class="note">
+    <strong>Welcome — set up your shop.</strong><br>
+    This appears the first time this owner signs in. The shop URL slug is generated automatically.
+  </div>
+  <div class="field"><label>Shop name</label><input id="setupShopName" placeholder="Amal Fashion"></div>
+  <div class="field"><label>Store type</label><input id="setupStoreType" placeholder="Fashion & Lifestyle"></div>
+  <div class="field"><label>Owner name</label><input id="setupOwnerName" placeholder="Your name"></div>
+  <div class="field"><label>Phone</label><input id="setupPhone" type="tel" placeholder="+919999999999"></div>
+  <div class="field"><label>Shop address</label><textarea id="setupAddress" placeholder="Your full shop address"></textarea></div>
+  <button class="btn primary" id="createShop" style="width:100%">Create My Shop</button>
+</div>
+
 <div id="dashboard" class="hidden">
 <div class="header-row">
 <div>
@@ -166,11 +180,40 @@ async function me(){
  return r.json();
 }
 
-async function ensureShop(){
+async function getMyShop(){
  const user=await me();
  const rows=await sb("shops?owner_id=eq."+encodeURIComponent(user.id)+"&select=*");
- if(!rows.length)throw Error("No shop is assigned to this owner yet. Create the shop in Supabase first.");
- return rows[0];
+ return rows.length ? rows[0] : null;
+}
+
+async function createMyShop(){
+ const name=$("setupShopName").value.trim();
+ const type=$("setupStoreType").value.trim();
+ const owner=$("setupOwnerName").value.trim();
+ const phone=$("setupPhone").value.trim();
+ const address=$("setupAddress").value.trim();
+
+ if(!name||!type||!owner||!phone||!address) throw Error("Please fill in all shop details.");
+
+ const r=await fetch(SUPABASE_URL+"/rest/v1/rpc/create_my_shop",{
+   method:"POST",
+   headers:{
+     "apikey":SUPABASE_ANON_KEY,
+     "Authorization":"Bearer "+token,
+     "Content-Type":"application/json"
+   },
+   body:JSON.stringify({
+     p_shop_name:name,
+     p_store_type:type,
+     p_owner_name:owner,
+     p_phone:phone,
+     p_address:address
+   })
+ });
+ let j=null;
+ try{j=await r.json()}catch(e){}
+ if(!r.ok) throw Error(j?.message||j?.hint||j?.details||"Could not create shop.");
+ return getMyShop();
 }
 
 async function update(fields){
@@ -184,12 +227,43 @@ async function update(fields){
 }
 
 async function openDashboard(){
- shop=await ensureShop();
+ shop=await getMyShop();
  $("loginBox").classList.add("hidden");
+
+ if(!shop){
+   $("setupBox").classList.remove("hidden");
+   return;
+ }
+
+ $("setupBox").classList.add("hidden");
  $("dashboard").classList.remove("hidden");
- $("shopName").textContent=shop.shop_name;
- $("dbNote").innerHTML="Customer URL:<br><strong>"+esc(location.origin.replace(/\/admin\.html$/,"")+"/s.html?shop="+(shop.slug||""))+"</strong>";
+ showShop();
 }
+
+function showShop(){
+ $("shopName").textContent=shop.shop_name;
+ const publicPath=location.origin+location.pathname.replace(/admin\.html$/,"s.html");
+ $("dbNote").innerHTML="Customer URL:<br><strong>"+esc(publicPath+"?shop="+(shop.slug||""))+"</strong>";
+}
+
+$("createShop").onclick=async()=>{
+ try{
+   $("createShop").disabled=true;
+   $("createShop").textContent="Creating…";
+   shop=await createMyShop();
+   if(!shop)throw Error("Shop was created but could not be loaded.");
+   $("setupBox").classList.add("hidden");
+   $("dashboard").classList.remove("hidden");
+   showShop();
+   toast("Shop created successfully.");
+ }catch(e){
+   console.error("Create shop error:",e);
+   toast(e.message||"Could not create shop.");
+ }finally{
+   $("createShop").disabled=false;
+   $("createShop").textContent="Create My Shop";
+ }
+};
 
 $("login").onclick=async()=>{
  try{
@@ -204,6 +278,7 @@ $("login").onclick=async()=>{
 $("logout").onclick=()=>{
  token=null;shop=null;
  $("dashboard").classList.add("hidden");
+ $("setupBox").classList.add("hidden");
  $("loginBox").classList.remove("hidden");
  $("password").value="";
 };
