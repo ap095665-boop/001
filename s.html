@@ -116,36 +116,75 @@ async function loadPublic(){
   }
 }
 
+function timeParts(v){
+  if(!v)return null;
+  const a=String(v).split(":").map(Number);
+  return {h:a[0]||0,m:a[1]||0};
+}
+function minutesNow(d=new Date()){return d.getHours()*60+d.getMinutes();}
+function dailyState(){
+  if(!shop?.schedule_enabled || !shop.daily_open_time || !shop.daily_close_time) return {enabled:false,closed:false,nextOpen:null};
+  const op=timeParts(shop.daily_open_time), cl=timeParts(shop.daily_close_time);
+  const open=op.h*60+op.m, close=cl.h*60+cl.m, now=minutesNow();
+  if(open===close) return {enabled:true,closed:false,nextOpen:null};
+  let isOpen;
+  if(open<close) isOpen=now>=open && now<close;
+  else isOpen=now>=open || now<close;
+  if(isOpen) return {enabled:true,closed:false,nextOpen:null};
+  const d=new Date();
+  if(now<open && open<close){ d.setHours(op.h,op.m,0,0); }
+  else if(open>close && now>=close && now<open){ d.setHours(op.h,op.m,0,0); }
+  else { d.setDate(d.getDate()+1); d.setHours(op.h,op.m,0,0); }
+  return {enabled:true,closed:true,nextOpen:d.toISOString()};
+}
+function effectiveClosed(){
+  const manual=shop?.status==="closed" && shop.reopen_at && new Date(shop.reopen_at)>new Date();
+  if(manual) return {closed:true,reason:"manual",nextOpen:shop.reopen_at};
+  const daily=dailyState();
+  if(daily.closed) return {closed:true,reason:"schedule",nextOpen:daily.nextOpen};
+  return {closed:false,reason:null,nextOpen:null};
+}
+
 function render(){
  if(!shop)return;
  $("brand").textContent=shop.shop_name;$("name").innerHTML=esc(shop.shop_name).replace(/\s+/g,"<br>");
  $("type").textContent=shop.store_type;$("type2").textContent=shop.store_type;$("owner").textContent=shop.owner_name;$("phone").textContent=shop.phone;$("address").textContent=shop.address;
  $("call").href="tel:"+shop.phone.replace(/[^\d+]/g,"");$("wa").href="https://wa.me/"+shop.phone.replace(/\D/g,"")+"?text="+encodeURIComponent("Hello, I'd like to enquire.");$("map").href=(shop.latitude!=null&&shop.longitude!=null)?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(shop.latitude+","+shop.longitude):"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(shop.address||shop.shop_name||"");
- const closed=shop.status==="closed"&&shop.reopen_at&&new Date(shop.reopen_at)>new Date();
- $("status").classList.toggle("closed",!!closed);$("statusText").textContent=closed?"CLOSED":"OPEN";
- $("tagline").textContent=closed?(shop.closed_message||"Shop is currently closed."):"A beautiful digital storefront for your shop.";
+ const state=effectiveClosed();
+ $("status").classList.toggle("closed",state.closed);$("statusText").textContent=state.closed?"CLOSED":"OPEN";
+ $("tagline").textContent=state.closed?(state.reason==="manual"?(shop.closed_message||"Shop is currently closed."):"Shop is currently outside today's opening hours."):"A beautiful digital storefront for your shop.";
  renderSlides();
 }
 function renderSlides(){
  if(!shop)return;let a=[];
- const closed=shop.status==="closed"&&shop.reopen_at&&new Date(shop.reopen_at)>new Date();
- if(closed)a.push(`<article class="slide"><div class="popup-kicker">SHOP STATUS</div><h3>We're<br>closed.</h3><p>${esc(shop.closed_message||"Please check back when we reopen.")}</p><div class="timer" data-count="${esc(shop.reopen_at)}">${countdown(shop.reopen_at)}</div><div class="small">Until reopening · live countdown</div></article>`);
+ const state=effectiveClosed();
+ if(state.closed){
+   const msg=state.reason==="manual"?(shop.closed_message||"Please check back when we reopen."):"We're currently outside today's opening hours.";
+   a.push(`<article class="slide"><div class="popup-kicker">SHOP STATUS</div><h3>We're<br>closed.</h3><p>${esc(msg)}</p>${state.nextOpen?`<div class="timer" data-count="${esc(state.nextOpen)}">${countdown(state.nextOpen)}</div><div class="small">Until next opening · live countdown</div>`:""}</article>`);
+ }
  const o=shop.offer;if(o&&o.endAt&&new Date(o.endAt)>new Date())a.push(`<article class="slide"><div class="popup-kicker">LIMITED OFFER</div><h3>${esc(o.name)}</h3><p>${esc(o.message||"Limited-time offer.")}</p><p><span class="old">${esc(o.oldPrice)}</span> &nbsp; <span class="deal">${esc(o.deal)}</span></p><div class="timer" data-count="${esc(o.endAt)}">${countdown(o.endAt)}</div><div class="small">Offer ends · live countdown</div></article>`);
  const i=shop.info;if(i&&i.createdAt&&Date.now()-new Date(i.createdAt)<86400000)a.push(`<article class="slide"><div class="popup-kicker">CUSTOM INFORMATION</div><h3>${esc(i.title)}</h3><p style="white-space:pre-wrap">${esc(i.message)}</p><div class="small">Visible for 24 hours</div></article>`);
  $("slides").innerHTML=a.length?a.join(""):`<article class="slide"><div class="popup-kicker">ALL CLEAR</div><h3>No active updates.</h3><p>New shop updates will appear here.</p></article>`;$("hint").textContent=a.length>1?"Swipe to see all updates":"";
 }
 function active(){
  if(!shop)return false;
- return (shop.status==="closed"&&shop.reopen_at&&new Date(shop.reopen_at)>new Date())||
+ const state=effectiveClosed();
+ return state.closed||
         (shop.offer?.endAt&&new Date(shop.offer.endAt)>new Date())||
         (shop.info?.createdAt&&Date.now()-new Date(shop.info.createdAt)<86400000);
 }
 function activeSignature(){
  if(!shop)return "";
+ const state=effectiveClosed();
  return JSON.stringify({
    status:shop.status,
    reopen_at:shop.reopen_at,
    closed_message:shop.closed_message,
+   schedule_enabled:shop.schedule_enabled,
+   daily_open_time:shop.daily_open_time,
+   daily_close_time:shop.daily_close_time,
+   effective_closed:state.closed,
+   next_open:state.nextOpen,
    offer:shop.offer,
    info:shop.info
  });
@@ -153,7 +192,21 @@ function activeSignature(){
 $("updates").onclick=()=>{$("customerOverlay").classList.add("show");renderSlides()};$("customerClose").onclick=()=>$("customerOverlay").classList.remove("show");
 
 setInterval(()=>{document.querySelectorAll("[data-count]").forEach(x=>x.textContent=countdown(x.dataset.count));},1000);
-setInterval(async()=>{if(SUPABASE_URL.startsWith("http")&&SHOP_SLUG)await loadPublic()},5000);
+/* Local schedule clock: no continuous Supabase polling. */
+let lastEffectiveClosed=null;
+function scheduleStatus(){
+ if(!shop)return false;
+ const manual=shop.status==="closed"&&shop.reopen_at&&new Date(shop.reopen_at)>new Date();
+ if(manual)return true;
+ if(!shop.schedule_enabled||!shop.daily_open_time||!shop.daily_close_time)return false;
+ const n=new Date(), [oh,om]=String(shop.daily_open_time).slice(0,5).split(":").map(Number), [ch,cm]=String(shop.daily_close_time).slice(0,5).split(":").map(Number);
+ const x=n.getHours()*60+n.getMinutes(), o=oh*60+om, c=ch*60+cm;
+ if(o===c)return true;
+ return o<c ? !(x>=o&&x<c) : !(x>=o||x<c);
+}
+function isShopClosed(){return scheduleStatus();}
+function nextScheduledOpen(){if(!shop?.schedule_enabled||!shop.daily_open_time)return null; const [h,m]=String(shop.daily_open_time).slice(0,5).split(":").map(Number); const n=new Date(), x=new Date(n); x.setHours(h,m,0,0); if(x<=n)x.setDate(x.getDate()+1); return x.toISOString();}
+setInterval(()=>{if(!shop)return; const c=isShopClosed(); if(c!==lastEffectiveClosed){lastEffectiveClosed=c;render();renderSlides();} else document.querySelectorAll("[data-count]").forEach(x=>x.textContent=countdown(x.dataset.count));},1000);
 loadPublic();
 </script>
 </body>
