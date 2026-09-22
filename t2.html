@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Shop Manager</title><style>
+:root{
+ --red:#d5103f;--red2:#f02b55;--red3:#ff7895;
+ --black:#030203;--black2:#0a0507;--text:#fff8fa;--muted:#c8b5bb;
+ --line:rgba(255,220,228,.14);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--black);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100dvh;overflow-x:hidden}
+body:before{
+ content:"";position:fixed;inset:-20%;z-index:-5;
+ background:linear-gradient(120deg,#030203 0%,#180308 17%,#59091f 34%,#100307 50%,#760b29 67%,#120307 82%,#030203 100%);
+ background-size:240% 240%;
+ animation:redFlow 18s ease-in-out infinite alternate;
+}
+body:after{
+ content:"";position:fixed;inset:0;z-index:-4;pointer-events:none;
+ background:linear-gradient(115deg,rgba(0,0,0,.35),transparent 35%,rgba(0,0,0,.22) 68%,rgba(0,0,0,.5));
+}
+@keyframes redFlow{0%{background-position:0% 45%}50%{background-position:100% 55%}100%{background-position:35% 100%}}
+@keyframes rise{from{opacity:0;transform:translateY(24px);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes reveal{from{opacity:0;transform:translateY(42px) scale(.96);filter:blur(13px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes popupIn{from{opacity:0;transform:translateY(28px) scale(.94);filter:blur(13px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes shimmer{0%{background-position:180% 0}100%{background-position:-40% 0}}
+@keyframes pulse{50%{box-shadow:0 0 0 9px rgba(213,16,63,0)}}
+
+.wrap{width:min(1160px,100%);margin:auto;padding:20px}
+.nav{display:flex;justify-content:space-between;align-items:center}
+.brand{font-size:12px;font-weight:950;letter-spacing:.24em;text-transform:uppercase}
+.status{display:flex;gap:8px;align-items:center;padding:9px 14px;border:1px solid var(--line);background:rgba(3,2,3,.62);backdrop-filter:blur(22px);border-radius:999px;font-size:11px;font-weight:900;box-shadow:0 12px 40px rgba(0,0,0,.42)}
+.status i{width:8px;height:8px;border-radius:50%;background:#61df99;box-shadow:0 0 14px #61df99;animation:pulse 1.8s infinite}
+.status.closed i{background:var(--red3);box-shadow:0 0 14px var(--red3)}
+
+.hero{min-height:74vh;display:grid;place-items:center;text-align:center;position:relative;padding:30px 0}
+.hero-shell{
+ width:min(960px,100%);position:relative;padding:clamp(38px,7vw,75px) clamp(20px,6vw,70px);
+ border:1px solid var(--line);border-radius:40px;
+ background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.012));
+ backdrop-filter:blur(28px);box-shadow:0 40px 110px rgba(0,0,0,.65);overflow:hidden
+}
+.hero-shell:before{
+ content:"";position:absolute;inset:0;
+ background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.065) 48%,transparent 68%);
+ background-size:220% 100%;animation:shimmer 9s linear infinite;pointer-events:none
+}
+.hero-shell:after{
+ content:"";position:absolute;inset:0;
+ background:linear-gradient(125deg,transparent 7%,rgba(213,16,63,.13) 32%,rgba(110,6,31,.08) 54%,rgba(255,120,149,.055) 76%,transparent 94%);
+ background-size:180% 180%;animation:redFlow 11s ease-in-out infinite alternate;pointer-events:none
+}
+.hero-content{position:relative;z-index:1}
+.eyebrow{font-size:11px;letter-spacing:.32em;color:#d9bac2;font-weight:950;animation:rise .8s .08s both}
+.hero h1{font-size:clamp(58px,12vw,148px);line-height:.78;letter-spacing:-.095em;margin:24px 0 22px;font-weight:1000;text-shadow:0 25px 80px rgba(0,0,0,.8);animation:reveal 1s .15s both}
+.hero p{max-width:620px;color:var(--muted);font-size:clamp(15px,2vw,18px);line-height:1.55;margin:0 auto 28px;animation:rise .8s .28s both}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;animation:rise .8s .4s both}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.045);color:#fff;border-radius:17px;padding:13px 18px;font-weight:850;text-decoration:none;cursor:pointer;backdrop-filter:blur(18px);transition:.25s ease}
+.btn:hover{transform:translateY(-3px);background:rgba(213,16,63,.14);border-color:rgba(255,120,149,.3)}
+.btn.primary{background:linear-gradient(135deg,var(--red2),var(--red));border-color:transparent;box-shadow:0 16px 45px rgba(213,16,63,.3)}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;padding:5px 0 70px}
+.card{padding:22px;border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018));backdrop-filter:blur(24px);border-radius:25px;animation:rise .8s both}
+.card:nth-child(1){animation-delay:.08s}.card:nth-child(2){animation-delay:.16s}.card:nth-child(3){animation-delay:.24s}
+.label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#a58d95}
+.value{font-weight:900;font-size:17px;margin-top:8px;word-break:break-word}
+footer{text-align:center;border-top:1px solid var(--line);padding:26px 0 35px;color:#a58f96;font-size:13px}
+
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(1,0,1,.86);backdrop-filter:blur(25px);display:none;align-items:center;justify-content:center;padding:9px}
+.overlay.show{display:flex;animation:rise .25s both}
+.popup{
+ width:min(870px,100%);height:min(790px,calc(100dvh - 18px));
+ border:1px solid rgba(255,220,228,.17);border-radius:34px;
+ background:linear-gradient(145deg,rgba(62,4,20,.99),rgba(12,2,6,.995) 58%,rgba(35,3,12,.99));
+ box-shadow:0 45px 140px rgba(0,0,0,.82),0 0 90px rgba(213,16,63,.13);
+ position:relative;overflow:hidden;animation:popupIn .6s cubic-bezier(.2,.8,.2,1) both
+}
+.popup:before{content:"";position:absolute;inset:0;background:linear-gradient(130deg,rgba(213,16,63,.13),transparent 38%,rgba(255,120,149,.045) 75%,transparent);pointer-events:none}
+.close{position:absolute;right:14px;top:14px;z-index:5;width:45px;height:45px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.48);color:#fff;font-size:23px;cursor:pointer;transition:.25s}
+.close:hover{transform:rotate(90deg);background:rgba(213,16,63,.25)}
+.popup-inner{height:100%;display:flex;flex-direction:column;padding:clamp(20px,4vw,40px);position:relative;z-index:1}
+.popup-kicker{font-size:10px;letter-spacing:.24em;color:var(--red3);font-weight:950;animation:rise .6s .1s both}
+.popup h2{font-size:clamp(42px,8vw,76px);line-height:.88;letter-spacing:-.07em;margin:10px 0 19px;color:#fff5f7;text-shadow:0 12px 50px rgba(213,16,63,.24);animation:reveal .75s .16s both}
+.slides{flex:1;min-height:0;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.slides::-webkit-scrollbar{display:none}
+.slide{min-width:100%;scroll-snap-align:center;border:1px solid rgba(255,220,228,.12);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border-radius:27px;padding:clamp(20px,5vw,46px);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;overflow:auto;box-shadow:inset 0 1px rgba(255,255,255,.055)}
+.slide>*{animation:slideIn .65s both}.slide>*:nth-child(1){animation-delay:.08s}.slide>*:nth-child(2){animation-delay:.16s}.slide>*:nth-child(3){animation-delay:.24s}.slide>*:nth-child(4){animation-delay:.32s}.slide>*:nth-child(5){animation-delay:.4s}
+.slide h3{font-size:clamp(42px,9vw,84px);line-height:.9;letter-spacing:-.075em;margin:8px 0 18px;font-weight:1000}
+.slide p{max-width:680px;color:#dbc8cf;font-size:17px;line-height:1.55;margin:0 0 18px}
+.timer{font-size:clamp(34px,8vw,68px);font-weight:1000;font-variant-numeric:tabular-nums;letter-spacing:-.04em;color:#fff2f5}
+.small{font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:#927b84;line-height:1.5}
+.old{text-decoration:line-through;color:#6f5c64}
+.deal{color:var(--red3);font-size:28px;font-weight:1000}
+.hint{text-align:center;color:#89737c;font-size:11px;padding-top:10px;animation:rise .6s .45s both}
+
+@media(max-width:650px){
+ .wrap{padding:14px 13px 25px}.hero{min-height:70vh;padding:25px 0 32px}.hero-shell{border-radius:30px;padding:36px 16px 40px}.hero h1{font-size:68px}
+ .grid{grid-template-columns:1fr;padding-bottom:55px}.popup{height:calc(100dvh - 16px);border-radius:27px}.popup-inner{padding:20px 14px 14px}.popup h2{font-size:43px;padding-right:50px}.slide{padding:22px 18px}.slide h3{font-size:clamp(40px,12vw,62px)}.slide p{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style></head><body>
+<div class="wrap"><nav class="nav"><div class="brand" id="brand">SHOP MANAGER</div><div class="status" id="status"><i></i><span id="statusText">OPEN</span></div></nav>
+<main class="hero"><div class="hero-shell"><div class="hero-content"><div class="eyebrow" id="type">SHOP</div><h1 id="name">SHOP</h1><p id="tagline">A live digital presence for this shop.</p><div class="actions"><a class="btn primary" id="call">Call</a><a class="btn" id="wa" target="_blank" rel="noopener">WhatsApp</a><a class="btn" id="map" target="_blank" rel="noopener">Location</a><button class="btn" id="updates">Updates</button></div></div></div></main>
+<section class="grid"><div class="card"><div class="label">Store type</div><div class="value" id="type2">—</div></div><div class="card"><div class="label">Owner</div><div class="value" id="owner">—</div></div><div class="card"><div class="label">Phone</div><div class="value" id="phone">—</div></div></section><footer id="address">—</footer></div>
+<div class="overlay" id="overlay"><div class="popup"><button class="close" id="close" aria-label="Close updates">×</button><div class="popup-inner"><div class="popup-kicker">LIVE SHOP UPDATE</div><h2>Right now.</h2><div class="slides" id="slides"></div><div class="hint" id="hint"></div></div></div></div>
+<script>const SUPABASE_URL="https://wzoatpjewfphxcclxpmz.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6b2F0cGpld2ZwaHhjY2x4cG16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MjE5MDksImV4cCI6MjEwNTM5NzkwOX0.MpcEGav98i-wAWgsD3ep8DNcUr-Jg0N-hYm4bTWFTqU";
+const SLUG=(new URLSearchParams(location.search).get("shop")||"").trim().toLowerCase();
+let shop=null,lastClosed=null,popupSig="";
+const $=id=>document.getElementById(id);
+const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+function countdown(iso){let n=new Date(iso)-Date.now();if(n<=0)return"00:00:00";let s=Math.floor(n/1000),d=Math.floor(s/86400);s%=86400;let h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;return(d?d+"d ":"")+`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
+function hm(v){let a=String(v||"").slice(0,5).split(":").map(Number);return(a[0]||0)*60+(a[1]||0)}
+function schedule(){if(!shop?.schedule_enabled||!shop.daily_open_time||!shop.daily_close_time)return{enabled:false,closed:false,next:null};let o=hm(shop.daily_open_time),c=hm(shop.daily_close_time),n=new Date(),x=n.getHours()*60+n.getMinutes();if(o===c)return{enabled:true,closed:true,next:null};let open=o<c?(x>=o&&x<c):(x>=o||x<c);if(open)return{enabled:true,closed:false,next:null};let d=new Date();d.setSeconds(0,0);d.setMilliseconds(0);d.setHours(Math.floor(o/60),o%60,0,0);if(d<=n)d.setDate(d.getDate()+1);return{enabled:true,closed:true,next:d.toISOString()}}
+function state(){if(!shop)return{closed:false,next:null,reason:null};if(shop.status==="closed"&&shop.reopen_at&&new Date(shop.reopen_at)>new Date())return{closed:true,next:shop.reopen_at,reason:"manual"};let s=schedule();return s.closed?{closed:true,next:s.next,reason:"schedule"}:{closed:false,next:null,reason:null}}
+function infoActive(){let i=shop?.info;if(!i?.createdAt)return false;return !i.endAt||new Date(i.endAt)>new Date()}
+function offerActive(){let o=shop?.offer;return !!(o?.endAt&&new Date(o.endAt)>new Date())}
+function signature(){let s=state();return JSON.stringify({closed:s.closed,next:s.next,offer:shop?.offer,info:shop?.info})}
+function render(){if(!shop)return;let s=state();$("brand").textContent=shop.shop_name;$("name").innerHTML=esc(shop.shop_name).replace(/\s+/g,"<br>");$("type").textContent=shop.store_type;$("type2").textContent=shop.store_type;$("owner").textContent=shop.owner_name;$("phone").textContent=shop.phone;$("address").textContent=shop.address||"";$("call").href="tel:"+String(shop.phone||"").replace(/[^\d+]/g,"");$("wa").href="https://wa.me/"+String(shop.phone||"").replace(/\D/g,"")+"?text="+encodeURIComponent("Hello, I'd like to enquire.");$("map").href=shop.latitude!=null&&shop.longitude!=null?"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(shop.latitude+","+shop.longitude):"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(shop.address||shop.shop_name||"");$("status").classList.toggle("closed",s.closed);$("statusText").textContent=s.closed?"CLOSED":"OPEN";$("tagline").textContent=s.closed?(s.reason==="manual"?(shop.closed_message||"Shop is currently closed."):"Shop is currently outside today's opening hours."):"A live digital presence for this shop.";renderSlides()}
+function renderSlides(){if(!shop)return;let a=[],s=state();if(s.closed)a.push(`<article class="slide"><div class="popup-kicker">SHOP STATUS</div><h3>We're<br>closed.</h3><p>${esc(s.reason==="manual"?(shop.closed_message||"Please check back later."):"We're currently outside today's opening hours.")}</p>${s.next?`<div class="timer" data-count="${esc(s.next)}">${countdown(s.next)}</div><div class="small">Until next opening · live countdown</div>`:""}</article>`);let o=shop.offer;if(offerActive())a.push(`<article class="slide"><div class="popup-kicker">LIMITED OFFER</div><h3>${esc(o.name)}</h3><p>${esc(o.message||"Limited-time offer.")}</p><p><span class="old">${esc(o.oldPrice)}</span> &nbsp; <span class="deal">${esc(o.deal)}</span></p><div class="timer" data-count="${esc(o.endAt)}">${countdown(o.endAt)}</div><div class="small">Offer ends · live countdown</div></article>`);let i=shop.info;if(infoActive())a.push(`<article class="slide"><div class="popup-kicker">CUSTOM INFORMATION</div><h3>${esc(i.title)}</h3><p style="white-space:pre-wrap">${esc(i.message)}</p><div class="small">${i.endAt?`Expires · ${new Date(i.endAt).toLocaleString()}`:"No automatic expiry"}</div></article>`);$("slides").innerHTML=a.length?a.join(""):`<article class="slide"><div class="popup-kicker">ALL CLEAR</div><h3>No active updates.</h3><p>New shop updates will appear here.</p></article>`;$("hint").textContent=a.length>1?"Swipe to see all updates":""}
+function active(){let s=state();return s.closed||offerActive()||infoActive()}
+async function load(){if(!SLUG){$("name").textContent="SHOP LINK MISSING";$("type").textContent="ADD ?shop=YOUR-SLUG";return}try{let r=await fetch(SUPABASE_URL+"/rest/v1/rpc/get_shop_public_by_slug",{method:"POST",headers:{apikey:SUPABASE_ANON_KEY,Authorization:"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({shop_slug:SLUG})});let t=await r.text();if(!r.ok)throw Error(t);shop=t?JSON.parse(t):null;if(!shop)throw Error("Shop not found");render();let sig=signature();if(active()&&sig!==popupSig){$("overlay").classList.add("show");popupSig=sig}}catch(e){console.error(e);$("name").textContent="SHOP NOT FOUND";$("type").textContent="CHECK SHOP LINK";$("tagline").textContent="The shop could not be loaded."}}
+$("updates").onclick=()=>{$("overlay").classList.add("show");renderSlides()};$("close").onclick=()=>$("overlay").classList.remove("show");
+setInterval(()=>{if(!shop)return;document.querySelectorAll("[data-count]").forEach(e=>e.textContent=countdown(e.dataset.count));let c=state().closed;if(c!==lastClosed){lastClosed=c;render()}},1000);
+load();</script></body></html>
