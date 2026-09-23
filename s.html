@@ -25,7 +25,7 @@ body:after{content:"";position:fixed;inset:-20px;z-index:-4;background:linear-gr
 <section class="grid"><div class="card"><div class="label">Store type</div><div class="value" id="type2">—</div></div><div class="card"><div class="label">Owner</div><div class="value" id="owner">—</div></div><div class="card"><div class="label">Phone</div><div class="value" id="phone">—</div></div></section>
 <footer id="address">—</footer>
 </div>
-<div class="overlay" id="payOverlay"><div class="popup"><button class="close" id="payClose">×</button><div class="popup-inner" style="align-items:center;text-align:center;justify-content:center"><div class="popup-kicker">UPI PAYMENT</div><h2 style="padding-right:0">Scan to pay.</h2><div id="qrBox" style="background:#fff;padding:16px;border-radius:20px;min-width:230px;min-height:230px;display:grid;place-items:center"></div><div id="upiName" style="font-weight:900;font-size:20px;margin-top:18px"></div><div id="upiId" class="small" style="margin-top:5px"></div><div id="upiNumber" class="small" style="margin-top:5px"></div><a id="upiOpen" class="btn primary" style="margin-top:18px;display:none" href="#">Open UPI App</a><div class="small" style="margin-top:12px">Scan this QR with any supported UPI app.</div></div></div></div>
+<div class="overlay" id="payOverlay"><div class="popup"><button class="close" id="payClose">×</button><div class="popup-inner" style="align-items:center;text-align:center;justify-content:center"><div class="popup-kicker">UPI PAYMENT</div><h2 style="padding-right:0">Scan to pay.</h2><div id="qrBox" style="background:#fff;padding:16px;border-radius:20px;min-width:230px;min-height:230px;display:grid;place-items:center"></div><div id="upiName" style="font-weight:900;font-size:20px;margin-top:18px"></div><div id="upiId" class="small" style="margin-top:5px"></div><div id="upiNumber" class="small" style="margin-top:5px"></div><button id="upiShare" class="btn primary" style="margin-top:18px;display:none" type="button">Share QR</button><div class="small" style="margin-top:12px">Scan this QR with any supported UPI app.</div></div></div></div>
 <div class="overlay" id="overlay"><div class="popup"><button class="close" id="close">×</button><div class="popup-inner"><div class="popup-kicker">LIVE SHOP UPDATE</div><h2>Right now.</h2><div class="slides" id="slides"></div><div class="hint" id="hint"></div></div></div></div>
 <script>
 const SUPABASE_URL="https://wzoatpjewfphxcclxpmz.supabase.co";
@@ -46,8 +46,58 @@ function renderSlides(){if(!shop)return;let a=[],s=state();if(s.closed)a.push(`<
 function active(){let s=state();return s.closed||offerActive()||infoActive()}
 async function load(){if(!SLUG){$("name").textContent="SHOP LINK MISSING";$("type").textContent="ADD ?shop=YOUR-SLUG";return}try{let r=await fetch(SUPABASE_URL+"/rest/v1/rpc/get_shop_public_by_slug",{method:"POST",headers:{apikey:SUPABASE_ANON_KEY,Authorization:"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({shop_slug:SLUG})});let t=await r.text();if(!r.ok)throw Error(t);shop=t?JSON.parse(t):null;if(!shop)throw Error("Shop not found");render();let sig=signature();if(active()&&sig!==popupSig){$("overlay").classList.add("show");popupSig=sig}}catch(e){console.error(e);$("name").textContent="SHOP NOT FOUND";$("type").textContent="CHECK SHOP LINK";$("tagline").textContent="The shop could not be loaded."}}
 function upiData(){return{upi:String(shop?.upi_id||"").trim(),name:String(shop?.upi_name||shop?.shop_name||"").trim(),number:String(shop?.upi_number||"").trim()}}
-function openPayment(){let d=upiData();$("qrBox").innerHTML="";$("upiName").textContent=d.name||"UPI Payment";$("upiId").textContent=d.upi?d.upi:"UPI ID not configured";$("upiNumber").textContent=d.number?"UPI number · "+d.number:"";$("upiOpen").style.display="none";if(!d.upi){$("qrBox").innerHTML='<div class="qr-error">UPI payment is not configured for this shop yet.</div>';$("payOverlay").classList.add("show");return}let link="upi://pay?pa="+encodeURIComponent(d.upi)+"&pn="+encodeURIComponent(d.name||shop.shop_name||"Shop");try{new QRCode($("qrBox"),{text:link,width:210,height:210,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});$("upiOpen").href=link;$("upiOpen").style.display="inline-block"}catch(e){$("qrBox").innerHTML='<div class="qr-error">QR could not be generated. Please try again.</div>'}$("payOverlay").classList.add("show")}
-$("payQr").onclick=openPayment;$("payClose").onclick=()=>$("payOverlay").classList.remove("show");$("payOverlay").addEventListener("click",e=>{if(e.target===$("payOverlay"))$("payOverlay").classList.remove("show")});
+let currentQrLink="";
+function openPayment(){
+  let d=upiData();
+  $("qrBox").innerHTML="";
+  $("upiName").textContent=d.name||"UPI Payment";
+  $("upiId").textContent=d.upi?d.upi:"UPI ID not configured";
+  $("upiNumber").textContent=d.number?"UPI number · "+d.number:"";
+  $("upiShare").style.display="none";
+  if(!d.upi){
+    $("qrBox").innerHTML='<div class="qr-error">UPI payment is not configured for this shop yet.</div>';
+    $("payOverlay").classList.add("show");
+    return;
+  }
+  currentQrLink="upi://pay?pa="+encodeURIComponent(d.upi)+"&pn="+encodeURIComponent(d.name||shop.shop_name||"Shop");
+  try{
+    new QRCode($("qrBox"),{
+      text:currentQrLink,
+      width:210,
+      height:210,
+      colorDark:"#000000",
+      colorLight:"#ffffff",
+      correctLevel:QRCode.CorrectLevel.M
+    });
+    $("upiShare").style.display="inline-block";
+  }catch(e){
+    $("qrBox").innerHTML='<div class="qr-error">QR could not be generated. Please try again.</div>';
+  }
+  $("payOverlay").classList.add("show");
+}
+async function shareQr(){
+  const canvas=$("qrBox").querySelector("canvas");
+  if(!canvas)return;
+  try{
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
+    if(!blob)throw Error("Could not prepare QR image.");
+    const file=new File([blob],"shop-upi-qr.png",{type:"image/png"});
+    const shareData={files:[file],title:"UPI Payment QR",text:"Scan this QR to pay "+(shop?.shop_name||"the shop")};
+    if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+      await navigator.share(shareData);
+    }else if(navigator.share){
+      await navigator.share({title:"UPI Payment QR",text:"Scan this QR to pay "+(shop?.shop_name||"the shop")});
+    }else{
+      const a=document.createElement("a");
+      a.href=canvas.toDataURL("image/png");
+      a.download="shop-upi-qr.png";
+      a.click();
+    }
+  }catch(e){
+    if(e.name!=="AbortError")alert("Sharing is not supported on this device. You can screenshot the QR.");
+  }
+}
+$("payQr").onclick=openPayment;$("upiShare").onclick=shareQr;$("payClose").onclick=()=>$("payOverlay").classList.remove("show");$("payOverlay").addEventListener("click",e=>{if(e.target===$("payOverlay"))$("payOverlay").classList.remove("show")});
 $("updates").onclick=()=>{$("overlay").classList.add("show");renderSlides()};$("close").onclick=()=>$("overlay").classList.remove("show");
 setInterval(()=>{if(!shop)return;document.querySelectorAll("[data-count]").forEach(e=>e.textContent=countdown(e.dataset.count));let c=state().closed;if(c!==lastClosed){lastClosed=c;render()}},1000);
 load();
