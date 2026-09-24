@@ -19,7 +19,7 @@
 <div class="field"><label>Note <span class="small">(max 100 words)</span></label><textarea id="infoMsg" maxlength="900" placeholder="Write your customer update..."></textarea><div class="small" id="infoWordCount">0 / 100 words</div></div>
 </div>
 <div id="productsMode" class="hidden">
-<div class="note">Add up to 20 products or services. Offer price is optional. Selling price is required. Customers can select items and send the order to your saved WhatsApp number.</div>
+<div class="note">Add up to 20 products or services. Choose <b>Cart</b> to let customers select and order, or <b>List</b> to show a menu/catalog with no selection or ordering.</div><div class="field"><label>Product display mode</label><select id="productDisplayMode"><option value="cart">Cart — customers can select &amp; order</option><option value="list">List — menu only, no ordering</option></select></div>
 <div id="productFields" style="margin-top:12px"></div>
 <button class="btn" id="addProduct" type="button" style="width:100%;margin-top:10px">＋ Add Product / Service</button>
 </div>
@@ -43,7 +43,26 @@ function localDateTimeValue(iso){
  const p=n=>String(n).padStart(2,"0");
  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes());
 }
-function fill(){ $("shopTitle").textContent=shop.shop_name;$("publicUrl").textContent=location.origin+location.pathname+"?shop="+shop.slug;$("bname").value=shop.shop_name||"";$("btype").value=shop.store_type||"";$("bowner").value=shop.owner_name||"";$("bphone").value=shop.phone||"";$("bupi").value=shop.upi_id||"";$("bupiName").value=shop.upi_name||shop.shop_name||"";$("bupiNumber").value=shop.upi_number||"";$("baddress").value=shop.address||"";$("lat").value=shop.latitude??"";$("lng").value=shop.longitude??"";$("openTime").value=(shop.daily_open_time||"").slice(0,5);$("closeTime").value=(shop.daily_close_time||"").slice(0,5);$("scheduleEnabled").checked=!!shop.schedule_enabled;$("closedMsg").value=shop.closed_message||"";$("reopen").value=shop.reopen_at?localDateTimeValue(shop.reopen_at):"";let o=shop.offer||{};$("offerName").value=o.name||"";$("offerOld").value=o.oldPrice||"";$("offerDeal").value=o.deal||"";$("offerMsg").value=o.message||"";$("offerEnd").value=o.endAt?localDateTimeValue(o.endAt):"";let i=shop.info||{};$("infoType").value=i.type==="products"?"products":"notes";$("infoTitle").value=i.title||"";$("infoMsg").value=i.message||"";$("infoReset").value=i.resetMode==="off"?"off":i.resetMode==="custom"?"custom":(i.resetMode==="24h"?"24h":(i.endAt===null?"off":"24h"));$("infoEnabledToggle").textContent=i.enabled===false?"● DISABLED":"● ENABLED";$("infoEnabledToggle").classList.toggle("danger",i.enabled===false);$("infoEnabledToggle").classList.toggle("primary",i.enabled!==false);$("infoEnd").value=i.endAt?localDateTimeValue(i.endAt):"";$("customWrap").classList.toggle("hidden",$("infoReset").value!=="custom");renderProductFields(Array.isArray(i.products)?i.products:[]);toggleInfoType();updateInfoWordCount();updateToggle()}
+function fill(){ $("shopTitle").textContent=shop.shop_name;$("publicUrl").textContent=location.origin+location.pathname+"?shop="+shop.slug;$("bname").value=shop.shop_name||"";$("btype").value=shop.store_type||"";$("bowner").value=shop.owner_name||"";$("bphone").value=shop.phone||"";$("bupi").value=shop.upi_id||"";$("bupiName").value=shop.upi_name||shop.shop_name||"";$("bupiNumber").value=shop.upi_number||"";$("baddress").value=shop.address||"";$("lat").value=shop.latitude??"";$("lng").value=shop.longitude??"";$("openTime").value=(shop.daily_open_time||"").slice(0,5);$("closeTime").value=(shop.daily_close_time||"").slice(0,5);$("scheduleEnabled").checked=!!shop.schedule_enabled;$("closedMsg").value=shop.closed_message||"";$("reopen").value=shop.reopen_at?localDateTimeValue(shop.reopen_at):"";let o=shop.offer||{};$("offerName").value=o.name||"";$("offerOld").value=o.oldPrice||"";$("offerDeal").value=o.deal||"";$("offerMsg").value=o.message||"";$("offerEnd").value=o.endAt?localDateTimeValue(o.endAt):"";let i=shop.info||{};
+let legacyNote=(i.type!=="products"&&(i.title||i.message))?{title:i.title||"",message:i.message||"",createdAt:i.createdAt,endAt:i.endAt,resetMode:i.resetMode}:{};
+let n=i.notes||legacyNote||{};
+let pr=Array.isArray(i.products)?i.products:[];
+let selectedType=(i.displayType||i.type)==="products"?"products":"notes";
+let noteMeta=i.notesMeta||{};
+let productMeta=i.productsMeta||i.productsData||{};
+let selectedInfo=selectedType==="products"?productMeta:noteMeta;
+$("infoType").value=selectedType;
+$("infoTitle").value=n.title||"";
+$("infoMsg").value=n.message||"";
+$("productDisplayMode").value=i.productDisplayMode==="list"?"list":"cart";
+let selectedReset=selectedInfo.resetMode||((selectedType==="notes"?n.resetMode:i.resetMode));
+$("infoReset").value=selectedReset==="off"?"off":selectedReset==="custom"?"custom":(selectedReset==="24h"?"24h":(selectedInfo.endAt===null?"off":"24h"));
+$("infoEnabledToggle").textContent=i.enabled===false?"● DISABLED":"● ENABLED";
+$("infoEnabledToggle").classList.toggle("danger",i.enabled===false);
+$("infoEnabledToggle").classList.toggle("primary",i.enabled!==false);
+$("infoEnd").value=selectedInfo.endAt?localDateTimeValue(selectedInfo.endAt):"";
+$("customWrap").classList.toggle("hidden",$("infoReset").value!=="custom");
+renderProductFields(pr);toggleInfoType();updateInfoWordCount();updateToggle()}
 function showDash(){$("login").classList.add("hidden");$("setup").classList.add("hidden");$("dash").classList.remove("hidden");fill()}
 function updateToggle(){const on=!!shop?.quick_closed;$("siteToggle").textContent=on?"● QUICK CLOSED":"● QUICK OPEN";$("siteToggle").classList.toggle("danger",on);$("siteToggle").classList.toggle("primary",!on)}
 
@@ -91,7 +110,30 @@ $("infoType").onchange=toggleInfoType;
 $("infoEnabledToggle").onclick=async()=>{const enabled=shop?.info?.enabled===false;const next={...(shop?.info||{}),enabled};if(!next.createdAt)next.createdAt=new Date().toISOString();await patch({info:next});updateInfoEnabledToggle()};
 $("infoMsg").oninput=updateInfoWordCount;
 $("infoReset").onchange=()=>$("customWrap").classList.toggle("hidden",$("infoReset").value!=="custom");
-$("saveInfo").onclick=async()=>{let type=$("infoType").value,m=$("infoReset").value,endAt=null;if(m==="24h")endAt=new Date(Date.now()+86400000).toISOString();else if(m==="custom"){if(!$("infoEnd").value)return toast("Choose an end time.");endAt=new Date($("infoEnd").value).toISOString();if(new Date(endAt)<=new Date())return toast("Choose a future time.")};if(type==="notes"){const title=$("infoTitle").value.trim(),message=$("infoMsg").value.trim();if(!title||!message)return toast("Add title and note.");if(wordCount(message)>100)return toast("Note is limited to 100 words.");await patch({info:{type:"notes",title,message,createdAt:new Date().toISOString(),endAt,resetMode:m,enabled:shop?.info?.enabled!==false}})}else{const products=collectProducts();if(!products.length)return toast("Add at least one product / service.");if(products.length>20)return toast("Maximum 20 products / services.");for(const x of products){if(!x.name)return toast("Every item needs a product / service name.");if(x.sellingPrice===""||Number.isNaN(Number(x.sellingPrice))||Number(x.sellingPrice)<0)return toast("Every item needs a valid selling price.");if(x.offerPrice!==""&&(Number.isNaN(Number(x.offerPrice))||Number(x.offerPrice)<0))return toast("Offer price must be valid.")}await patch({info:{type:"products",title:"Products & Services",products,createdAt:new Date().toISOString(),endAt,resetMode:m,enabled:shop?.info?.enabled!==false}})}};
+$("saveInfo").onclick=async()=>{
+  const type=$("infoType").value,m=$("infoReset").value;
+  let endAt=null;
+  if(m==="24h")endAt=new Date(Date.now()+86400000).toISOString();
+  else if(m==="custom"){if(!$("infoEnd").value)return toast("Choose an end time.");endAt=new Date($("infoEnd").value).toISOString();if(new Date(endAt)<=new Date())return toast("Choose a future time.")}
+  const old=shop?.info||{};
+  const enabled=old.enabled!==false;
+  const displayType=type;
+  if(type==="notes"){
+    const title=$("infoTitle").value.trim(),message=$("infoMsg").value.trim();
+    if(!title||!message)return toast("Add title and note.");
+    if(wordCount(message)>100)return toast("Note is limited to 100 words.");
+    const products=Array.isArray(old.products)?old.products:[];
+    const productMeta=old.productsMeta||old.productsData||{};
+    await patch({info:{enabled,displayType,notes:{title,message,createdAt:new Date().toISOString(),endAt,resetMode:m},products,productsMeta:productMeta,productDisplayMode:old.productDisplayMode==="list"?"list":"cart"}});
+  }else{
+    const products=collectProducts();
+    if(!products.length)return toast("Add at least one product / service.");
+    if(products.length>20)return toast("Maximum 20 products / services.");
+    for(const x of products){if(!x.name)return toast("Every item needs a product / service name.");if(x.sellingPrice===""||Number.isNaN(Number(x.sellingPrice))||Number(x.sellingPrice)<0)return toast("Every item needs a valid selling price.");if(x.offerPrice!==""&&(Number.isNaN(Number(x.offerPrice))||Number(x.offerPrice)<0))return toast("Offer price must be valid.")}
+    const oldNotes=old.notes||((old.type!=="products"&&(old.title||old.message))?{title:old.title||"",message:old.message||"",createdAt:old.createdAt,endAt:old.endAt,resetMode:old.resetMode}:{});
+    await patch({info:{enabled,displayType,notes:oldNotes,products,productsMeta:{endAt,resetMode:m},productDisplayMode:$("productDisplayMode").value==="list"?"list":"cart"}});
+  }
+};
 $("clearInfo").onclick=()=>patch({info:null});
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("on"));b.classList.add("on");document.querySelectorAll("#dash .section").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden")});
 </script></body></html>
