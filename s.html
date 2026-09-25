@@ -58,6 +58,15 @@ body:after{content:"";position:fixed;inset:-20px;z-index:-4;background:linear-gr
 <div class="overlay" id="payOverlay"><div class="popup"><button class="close" id="payClose">×</button><div class="popup-inner" style="align-items:center;text-align:center;justify-content:center"><div class="popup-kicker">UPI PAYMENT</div><h2 style="padding-right:0">Scan to pay.</h2><div id="qrBox" style="background:#fff;padding:16px;border-radius:20px;min-width:230px;min-height:230px;display:grid;place-items:center"></div><div id="upiName" style="font-weight:900;font-size:20px;margin-top:18px"></div><div id="upiId" class="small" style="margin-top:5px"></div><div id="upiNumber" class="small" style="margin-top:5px"></div><button id="upiShare" class="btn primary" style="margin-top:18px;display:none" type="button">Share QR</button><div class="small" style="margin-top:12px">Scan this QR with any supported UPI app.</div></div></div></div>
 <div class="overlay" id="overlay"><div class="popup"><button class="close" id="close">×</button><div class="popup-inner"><div class="popup-kicker">LIVE SHOP UPDATE</div><h2>Right now.</h2><div class="slides" id="slides"></div><div class="hint" id="hint"></div></div></div></div>
 <div class="overlay" id="cartOverlay"><div class="popup cart-popup"><button class="close" id="cartClose">×</button><div class="popup-inner cart-popup-inner"><div class="popup-kicker">YOUR CART</div><h2>Review order.</h2><div class="cart-items" id="cartItems"></div><div class="cart-summary"><div class="cart-summary-line"><span>Items</span><strong id="cartItemCount">0</strong></div><div class="cart-summary-line cart-grand"><span>Grand Total</span><strong id="cartGrandTotal">₹0</strong></div><div class="pickup-info" role="note">🕒 <strong>Choose your time</strong><span>Select a pickup / visit time <strong>at least 30 minutes from now</strong>.</span></div><div class="order-slot"><label>Pickup / Visit date<input id="cartOrderDate" type="date" aria-label="Pickup or visit date"></label><label>Time<input id="cartOrderTime" type="time" required aria-label="Pickup or visit time"></label></div><div class="cart-popup-actions"><button class="btn" type="button" id="cartBack">Back</button><button class="btn primary" type="button" id="cartSendOrder">Send Order</button></div></div></div></div></div>
+<div class="site-policy" id="sitePolicy">
+  <div class="site-policy-box">
+    <button class="close" id="policyClose" type="button" aria-label="Close">×</button>
+    <div class="popup-kicker">SINDORA · SHOP MANAGER</div>
+    <h2 id="policyTitle">Privacy Policy</h2>
+    <div class="site-policy-doc" id="policyDoc"></div>
+    <div class="site-policy-close"><button class="btn" id="policyClose2" type="button">Close</button></div>
+  </div>
+</div>
 <script>
 
 const SITE_POLICIES={
@@ -72,7 +81,8 @@ $("sitePolicy").addEventListener("click",e=>{if(e.target===$("sitePolicy"))$("si
 
 const SUPABASE_URL="https://wzoatpjewfphxcclxpmz.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6b2F0cGpld2ZwaHhjY2x4cG16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MjE5MDksImV4cCI6MjEwNTM5NzkwOX0.MpcEGav98i-wAWgsD3ep8DNcUr-Jg0N-hYm4bTWFTqU";
-const SLUG=(new URLSearchParams(location.search).get("shop")||"").trim().toLowerCase();
+const params=new URLSearchParams(location.search);
+const SLUG=(params.get("shop")||params.get("slug")||"").trim().replace(/^\/+|\/+$/g,"").toLowerCase();
 let shop=null,lastClosed=null,popupSig="",selectedProducts=new Map(),lastProductCatalogKey="";
 const $=id=>document.getElementById(id);
 const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
@@ -108,7 +118,24 @@ function sendSelectedOrder(){if(state().closed)return toastOrder("The store is c
 function toastOrder(message){let t=$("orderToast");if(!t){t=document.createElement("div");t.id="orderToast";t.className="toast";document.body.appendChild(t)}t.textContent=message;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
 function renderSlides(keepScroll=true){if(!shop)return;syncProductSelectionState();let a=[],s=state();if(s.closed)a.push(`<article class="slide"><div class="popup-kicker">SHOP STATUS</div><h3>We're<br>closed.</h3><p>${esc(s.reason==="manual"?(shop.closed_message||"Please check back later."):s.reason==="quick"?"The shop is temporarily closed.":"We're currently outside today's opening hours.")}</p>${s.next?`<div class="timer" data-count="${esc(s.next)}">${countdown(s.next)}</div><div class="small">Until next opening · live countdown</div>`:""}</article>`);let o=shop.offer;if(offerActive())a.push(`<article class="slide"><div class="popup-kicker">LIMITED OFFER</div><h3>${esc(o.name)}</h3><p>${esc(o.message||"Limited-time offer.")}</p><p><span class="old">${esc(o.oldPrice)}</span> &nbsp; <span class="deal">${esc(o.deal)}</span></p><div class="timer" data-count="${esc(o.endAt)}">${countdown(o.endAt)}</div><div class="small">Offer ends · live countdown</div></article>`);let i=infoPayload();if(infoActive()&&i){if(i.type==="products"&&productItems().length)a.push(renderProductSlide());else if(i.type==="notes")a.push(`<article class="slide"><div class="popup-kicker">CUSTOM INFORMATION</div><h3>${esc(i.title)}</h3><p style="white-space:pre-wrap">${esc(i.message)}</p><div class="small">${i.endAt?`Expires · ${new Date(i.endAt).toLocaleString()}`:"No automatic expiry"}</div></article>`)}$("slides").innerHTML=a.length?a.join(""):`<article class="slide"><div class="popup-kicker">ALL CLEAR</div><h3>No active updates.</h3><p>New shop updates will appear here.</p></article>`;$("hint").textContent=a.length>1?"Swipe to see all updates":"";wireProductCart()}
 function active(){let s=state();return s.closed||offerActive()||infoActive()}
-async function load(){if(!SLUG){$("name").textContent="SHOP LINK MISSING";$("type").textContent="ADD ?shop=YOUR-SLUG";return}try{let r=await fetch(SUPABASE_URL+"/rest/v1/rpc/get_shop_public_by_slug",{method:"POST",headers:{apikey:SUPABASE_ANON_KEY,Authorization:"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({shop_slug:SLUG})});let t=await r.text();if(!r.ok)throw Error(t);shop=t?JSON.parse(t):null;if(!shop)throw Error("Shop not found");popupSig="";render();const sig=signature();if(active()){popupSig=sig;$("overlay").classList.add("show")}else{$("overlay").classList.remove("show")}}catch(e){console.error(e);$("name").textContent="SHOP NOT FOUND";$("type").textContent="CHECK SHOP LINK";$("tagline").textContent="The shop could not be loaded."}}
+async function load(){
+  if(!SLUG){$("name").textContent="SHOP LINK MISSING";$("type").textContent="ADD ?shop=YOUR-SLUG";return}
+  try{
+    const r=await fetch(SUPABASE_URL+"/rest/v1/rpc/get_shop_public_by_slug",{method:"POST",headers:{apikey:SUPABASE_ANON_KEY,Authorization:"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({shop_slug:SLUG})});
+    const t=await r.text();
+    if(!r.ok)throw Error("HTTP "+r.status+" "+t);
+    shop=t?JSON.parse(t):null;
+    if(!shop||!shop.id)throw Error("No shop matched slug: "+SLUG);
+    popupSig="";render();
+    const sig=signature();
+    if(active()){popupSig=sig;$("overlay").classList.add("show")}else{$("overlay").classList.remove("show")}
+  }catch(e){
+    console.error("Shop load failed:",e);
+    $("name").textContent="SHOP NOT FOUND";
+    $("type").textContent="CHECK SHOP LINK";
+    $("tagline").textContent="Slug: "+SLUG;
+  }
+}
 function upiData(){return{upi:String(shop?.upi_id||"").trim(),name:String(shop?.upi_name||shop?.shop_name||"").trim(),number:String(shop?.upi_number||"").trim()}}
 let currentQrLink="";
 function openPayment(){
@@ -168,13 +195,5 @@ setInterval(()=>{if(!shop)return;document.querySelectorAll("[data-count]").forEa
 load();
 </script>
 
-<div class="site-policy" id="sitePolicy">
-  <div class="site-policy-box">
-    <button class="close" id="policyClose" type="button" aria-label="Close">×</button>
-    <div class="popup-kicker">SINDORA · SHOP MANAGER</div>
-    <h2 id="policyTitle">Privacy Policy</h2>
-    <div class="site-policy-doc" id="policyDoc"></div>
-    <div class="site-policy-close"><button class="btn" id="policyClose2" type="button">Close</button></div>
-  </div>
-</div>
+
 </body></html>
