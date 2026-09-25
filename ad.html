@@ -41,7 +41,12 @@
 <label class="legal-check"><input id="legalAgree" type="checkbox"><span>I have read and understood the Privacy Policy, Terms & Conditions and Data Collection Notice. I agree to the Terms and confirm that the information I provide is authorized for use and publication through my Shop Manager page.</span></label>
 <div class="legal-actions"><button class="btn primary" id="legalAccept" disabled>Accept & Continue</button></div>
 </div></div>
-<div class="toast" id="toast"></div>
+<div class="legal-links" aria-label="Legal information">
+<button type="button" data-legal-footer="privacy">Privacy Policy</button>
+<button type="button" data-legal-footer="terms">Terms &amp; Conditions</button>
+<button type="button" data-legal-footer="data">Data Collection</button>
+<button type="button" data-legal-footer="violations">Prohibited Use</button>
+</div><div class="toast" id="toast"></div>
 <script>
 const URL="https://wzoatpjewfphxcclxpmz.supabase.co",KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6b2F0cGpld2ZwaHhjY2x4cG16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4MjE5MDksImV4cCI6MjEwNTM5NzkwOX0.MpcEGav98i-wAWgsD3ep8DNcUr-Jg0N-hYm4bTWFTqU";
 let token=null,user=null,shop=null;
