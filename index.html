@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#090a0d">
-<title>Simple Shop Manager — Simple shop records + Free Digital Bio</title>
+<title>Simple Shop Manager — Dynamic Storefront Bio + Admin App</title>
 <style>
 :root{
   --bg:#090a0d;
@@ -205,6 +205,63 @@ h1 span{color:var(--lime)}
   *,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}
 }
 
+.bio-intro{position:relative}
+.bio-demo-shell{
+  display:grid;grid-template-columns:.86fr 1.14fr;gap:24px;align-items:center;
+  border:1px solid rgba(255,255,255,.11);border-radius:28px;padding:28px;
+  background:
+    radial-gradient(420px 280px at 82% 45%,rgba(141,108,255,.16),transparent 72%),
+    linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.018));
+  box-shadow:0 28px 90px rgba(0,0,0,.28);overflow:hidden;
+}
+.bio-demo-copy{min-width:0}
+.bio-live-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(201,255,61,.18);background:rgba(201,255,61,.06);color:#dce3d0;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:850}
+.bio-live-pill i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime)}
+.bio-demo-copy h3{font-size:clamp(27px,3.2vw,42px);line-height:.98;letter-spacing:-.055em;margin:17px 0 10px}
+.bio-demo-copy>p{color:var(--muted);font-size:13px;line-height:1.55;max-width:450px}
+.bio-demo-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:20px 0}
+.bio-tab{border:1px solid var(--line);background:#ffffff05;color:#b9bec8;border-radius:11px;padding:10px 14px;font-size:12px;font-weight:850}
+.bio-tab.is-active{background:var(--lime);border-color:transparent;color:#090b0d}
+.bio-value-row{display:flex;justify-content:space-between;gap:15px;align-items:center;padding-top:16px;border-top:1px solid var(--line);font-size:11px;color:#777d89}
+.bio-value-row b{color:#fff;font-size:13px}
+.bio-phone-wrap{position:relative;display:grid;place-items:center;min-height:520px}
+.bio-phone{
+  width:min(300px,76vw);height:555px;padding:7px;border-radius:38px;background:#1b1e25;
+  border:1px solid rgba(255,255,255,.15);box-shadow:0 35px 100px rgba(0,0,0,.48),0 0 70px rgba(141,108,255,.12);
+  transform:rotate(2deg);transition:transform .35s ease;
+}
+.bio-phone:hover{transform:rotate(0deg) translateY(-4px)}
+.bio-phone-top{height:25px;padding:2px 13px;display:flex;justify-content:space-between;align-items:center;color:#777d89;font-size:8px}
+.bio-cover{margin:0 6px;padding:17px 13px;border-radius:20px;background:linear-gradient(135deg,#252934,#15181f);display:flex;align-items:center;gap:10px}
+.bio-logo{width:43px;height:43px;border-radius:14px;display:grid;place-items:center;background:var(--lime);color:#090b0d;font-weight:950;font-size:20px}
+.bio-cover strong{display:block;font-size:12px}.bio-cover small{display:block;margin-top:3px;color:#9ca2ad;font-size:8px}
+.bio-content{padding:10px 6px}
+.bio-action-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.bio-action-row button,.bio-contact-card button,.bio-offer-card button{border:1px solid var(--line);background:#ffffff06;color:#fff;border-radius:10px;padding:9px 5px;font-size:8px;font-weight:850}
+.bio-card,.bio-contact-card,.bio-offer-card{border:1px solid rgba(255,255,255,.08);background:#ffffff04;border-radius:16px;padding:13px;margin-bottom:8px}
+.bio-card-label,.bio-offer-card>span{font-size:7px;letter-spacing:.12em;color:#858b97;font-weight:900}
+.bio-card h4,.bio-contact-card h4{font-size:13px;line-height:1.1;margin:7px 0 5px}.bio-card p,.bio-contact-card p,.bio-offer-card p{font-size:8px;line-height:1.45;color:#858b96;margin:0}
+.bio-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.bio-mini-grid div{border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px;background:#ffffff03}
+.bio-mini-grid b{display:block;font-size:9px}.bio-mini-grid small{display:block;margin-top:3px;color:#777d89;font-size:7px}
+.bio-offer-card{background:linear-gradient(135deg,rgba(201,255,61,.10),rgba(141,108,255,.10));border-color:rgba(201,255,61,.18)}
+.bio-offer-card strong{display:block;font-size:29px;letter-spacing:-.06em;margin:7px 0 1px}
+.bio-offer-card button{margin-top:10px;background:var(--lime);color:#090b0d;border-color:transparent}
+.bio-contact-card button{margin-top:11px;width:100%;background:var(--lime);color:#090b0d;border-color:transparent}
+.bio-float{position:absolute;z-index:3;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.93);color:#0a0c0f;border-radius:12px;padding:9px 11px;font-size:9px;font-weight:900;box-shadow:0 18px 45px rgba(0,0,0,.35);animation:badgeFloat 4s ease-in-out infinite}
+.bio-float-one{right:2%;top:18%}.bio-float-two{left:3%;bottom:17%;animation-delay:-1.5s}
+@media(max-width:900px){
+  .bio-demo-shell{grid-template-columns:1fr;padding:22px}
+  .bio-phone-wrap{min-height:560px}
+}
+@media(max-width:520px){
+  .bio-demo-shell{padding:18px;border-radius:22px}
+  .bio-phone{height:520px;width:260px}
+  .bio-phone-wrap{min-height:535px}
+  .bio-float-one{right:0;top:12%}.bio-float-two{left:0;bottom:13%}
+  .bio-value-row{align-items:flex-start;flex-direction:column}
+}
+
 .digital-bio-banner{
   margin:0 0 24px;border:1px solid rgba(201,255,61,.22);
   background:linear-gradient(115deg,rgba(201,255,61,.10),rgba(141,108,255,.10));
@@ -230,7 +287,7 @@ h1 span{color:var(--lime)}
     <nav class="nav" aria-label="Main navigation">
       <a href="#features" data-scroll="features">Features</a>
       <a href="#demo" data-open="demo">See demo</a>
-      <a class="nav-cta" href="#contact" data-open="contact">Get it for ₹150</a>
+      <a class="nav-cta" href="#contact" data-open="contact">Get it for ₹200 / 6 months</a>
     </nav>
   </header>
 
@@ -239,16 +296,17 @@ h1 span{color:var(--lime)}
       <div class="hero-copy">
         <div class="eyebrow"><i></i> Built for small shops</div>
         <h1>Your shop.<br><span>Simplified.</span></h1>
-        <p>Record every sale in seconds. Track purchased stock, keep shop notes, and instantly know where your day stands — without complicated accounting software.</p>
+        <p>Record sales, track purchases and manage everyday shop tasks from the Admin App — while your Dynamic Storefront Bio gives customers a premium place to see your shop, offers and contact options.</p>
         <div class="actions">
-          <a class="btn btn-primary" href="#contact" data-open="contact">Get started · ₹150</a>
+          <a class="btn btn-primary" href="#contact" data-open="contact">Get started · ₹200 / 6 months</a>
           <a class="btn btn-secondary" href="#demo" data-open="demo">▶ See how it works</a>
-          <a class="btn btn-secondary" id="ssmDownloadApp" href="/app-release (6).apk" download>⬇ Download app</a>
+          <a class="btn btn-secondary" id="ssmDownloadApp" href="/app-release (6).apk" download>⬇ Download Shop Manager app</a>
+          <a class="btn btn-secondary" id="bioAdminDownloadApp" href="/app-release (8).apk" download>⚡ Download Bio Admin app</a>
         </div>
         <div class="proof">
-          <span>✓ <b>One-time</b> payment</span>
-          <span>✓ <b>Offline-ready</b></span>
-          <span>✓ <b>Simple</b> by design</span>
+          <span>✓ <b>₹200 / 6 months</b></span>
+          <span>✓ <b>Dynamic Storefront Bio</b></span>
+          <span>✓ <b>Admin app included</b></span>
         </div>
       </div>
 
@@ -282,41 +340,116 @@ h1 span{color:var(--lime)}
     <section class="section container" id="features">
       <div class="section-head">
         <div class="kicker">Everything simple</div>
-        <h2>The tools a small shop actually needs.</h2>
-        <p>No accounting maze. Just quick records, clear totals and useful shop information.</p>
+        <h2>One bundle for your shop and your customers.</h2>
+        <p>Admin tools for you. A polished Dynamic Storefront Bio for your customers. ₹200 covers 6 months.</p>
       </div>
       <div class="feature-grid">
         <article class="feature"><div class="feature-icon">💰</div><h3>Sales</h3><p>Enter an amount, tap record, and your daily total updates instantly.</p></article>
         <article class="feature"><div class="feature-icon">📦</div><h3>Stock purchases</h3><p>Keep a simple record of what you purchased and how much you spent.</p></article>
         <article class="feature"><div class="feature-icon">📝</div><h3>Notes & reminders</h3><p>Keep important shop tasks, supplier notes and reminders together.</p></article>
         <article class="feature"><div class="feature-icon">🧮</div><h3>Calculator</h3><p>A quick calculator is always available when you need it.</p></article>
-        <article class="feature"><div class="feature-icon">📊</div><h3>Reports</h3><p>See daily, weekly, monthly and custom-date sales at a glance.</p></article>
+        <article class="feature"><div class="feature-icon">🌐</div><h3>Dynamic Storefront Bio</h3><p>Give customers one premium link for shop status, offers, services, contact and more.</p></article>
       </div>
     </section>
 
 
     <section class="section container" id="digital-bio">
-      <div class="digital-bio-banner">
-        <div>
-          <div class="kicker">FREE BONUS FOR YOUR BUSINESS</div>
-          <h2>Give your business a digital identity.</h2>
-          <p><strong>Get a free Digital Bio webpage</strong> for your business — one simple page to showcase your shop, services, contact details and online presence in one shareable link.</p>
-          <div class="banner-points">
-            <span>Easy to share</span>
-            <span>Professional online presence</span>
-            <span>Perfect for WhatsApp & social media</span>
+      <div class="bio-intro">
+        <div class="section-head">
+          <div class="kicker">DYNAMIC STOREFRONT BIO · INCLUDED</div>
+          <h2>Your shop gets a digital storefront people can actually use.</h2>
+          <p>Show your live status, offers, products, services and contact options in one polished page. Your Admin App controls the information customers see.</p>
+        </div>
+
+        <div class="bio-demo-shell">
+          <div class="bio-demo-copy">
+            <div class="bio-live-pill"><i></i> Live customer preview</div>
+            <h3>See the storefront in action.</h3>
+            <p>Tap the sections below to preview how a customer's experience can change without rebuilding the page.</p>
+            <div class="bio-demo-tabs" role="tablist" aria-label="Dynamic Bio preview">
+              <button class="bio-tab is-active" type="button" data-bio-tab="home" role="tab" aria-selected="true">Store</button>
+              <button class="bio-tab" type="button" data-bio-tab="offers" role="tab" aria-selected="false">Offers</button>
+              <button class="bio-tab" type="button" data-bio-tab="contact" role="tab" aria-selected="false">Contact</button>
+            </div>
+            <div class="bio-value-row">
+              <span>Controlled from Admin App</span>
+              <b>₹200 / 6 months</b>
+            </div>
+          </div>
+
+          <div class="bio-phone-wrap">
+            <div class="bio-phone">
+              <div class="bio-phone-top">
+                <span>9:41</span><span>● ● ●</span>
+              </div>
+              <div class="bio-cover">
+                <div class="bio-logo">S</div>
+                <div>
+                  <strong>Sunrise Mini Mart</strong>
+                  <small>Open · Closes 9:30 PM</small>
+                </div>
+              </div>
+
+              <div class="bio-content">
+                <div class="bio-state" data-bio-panel="home">
+                  <div class="bio-action-row">
+                    <button type="button">📞 Call</button>
+                    <button type="button">💬 WhatsApp</button>
+                    <button type="button">📍 Map</button>
+                  </div>
+                  <div class="bio-card">
+                    <span class="bio-card-label">TODAY</span>
+                    <h4>Fresh essentials, close to you.</h4>
+                    <p>Rice · Groceries · Snacks · Household essentials</p>
+                  </div>
+                  <div class="bio-mini-grid">
+                    <div><b>Menu</b><small>Browse items</small></div>
+                    <div><b>Pre-order</b><small>Save your time</small></div>
+                  </div>
+                </div>
+
+                <div class="bio-state" data-bio-panel="offers" hidden>
+                  <div class="bio-offer-card">
+                    <span>LIVE OFFER</span>
+                    <strong>10% OFF</strong>
+                    <p>Selected grocery essentials today.</p>
+                    <button type="button">View offer →</button>
+                  </div>
+                  <div class="bio-card">
+                    <span class="bio-card-label">SHOP STATUS</span>
+                    <h4>Open right now</h4>
+                    <p>Customers can see updates without calling the shop.</p>
+                  </div>
+                </div>
+
+                <div class="bio-state" data-bio-panel="contact" hidden>
+                  <div class="bio-contact-card">
+                    <span class="bio-card-label">CONTACT</span>
+                    <h4>Sunrise Mini Mart</h4>
+                    <p>Call, WhatsApp, visit or send an enquiry from one page.</p>
+                    <button type="button">💬 Enquire on WhatsApp</button>
+                  </div>
+                  <div class="bio-card">
+                    <span class="bio-card-label">SAVE</span>
+                    <h4>Bookmark this storefront</h4>
+                    <p>Come back anytime for live shop updates and offers.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bio-float bio-float-one">✓ Live status</div>
+            <div class="bio-float bio-float-two">⚡ Instant offer</div>
           </div>
         </div>
-        <a class="btn btn-primary" href="#contact" data-open="contact">Claim your free Bio →</a>
       </div>
     </section>
 
     <section class="section container" id="offer">
       <div class="offer">
         <div>
-          <div class="kicker">One-time purchase</div>
-          <h2>Simple shop records. ₹150 for 6 months validity.</h2>
-          <p>No complicated setup. Use it on your phone and keep your daily shop routine simple.</p>
+          <div class="kicker">6-MONTH BUNDLE</div>
+          <h2>₹200 for 6 months. Bio + Admin App included.</h2>
+          <p>One simple bundle for your everyday shop records, premium Dynamic Storefront Bio and Admin App.</p>
         </div>
         <a class="btn btn-primary" href="#contact" data-open="contact">Get started →</a>
       </div>
@@ -348,19 +481,40 @@ h1 span{color:var(--lime)}
 <div class="modal" id="ssmContactModal" role="dialog" aria-modal="true" aria-labelledby="ssmContactTitle">
   <div class="modal-card">
     <div class="modal-top">
-      <h2 id="ssmContactTitle">Get Simple Shop</h2>
+      <h2 id="ssmContactTitle">Get the 6-Month Bundle</h2>
       <button class="close-btn" type="button" data-close aria-label="Close contact form">×</button>
     </div>
-    <p>Send an enquiry for the ₹150 6 months version.</p>
+    <p>Send an enquiry for the ₹200 / 6 months bundle with Dynamic Storefront Bio + Admin App.</p>
     <form class="form" id="ssmEnquiryForm">
       <label>Shop / owner name<input id="ssmOwner" required autocomplete="name"></label>
       <label>Mobile number<input id="ssmPhone" required inputmode="tel" autocomplete="tel"></label>
       <label>Message<textarea id="ssmMessage" placeholder="Optional"></textarea></label>
-      <button class="btn btn-primary" type="submit">Send enquiry on WhatsApp</button>
+      <button class="btn btn-primary" type="submit">Enquire for ₹200 / 6 months</button>
       <p class="modal-note">Before publishing, replace the WhatsApp destination in the JavaScript with your business number.</p>
     </form>
   </div>
 </div>
+
+<script>
+(function(){
+  "use strict";
+  var tabs = document.querySelectorAll("[data-bio-tab]");
+  var panels = document.querySelectorAll("[data-bio-panel]");
+  tabs.forEach(function(tab){
+    tab.addEventListener("click", function(){
+      var target = tab.getAttribute("data-bio-tab");
+      tabs.forEach(function(item){
+        var active = item === tab;
+        item.classList.toggle("is-active", active);
+        item.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      panels.forEach(function(panel){
+        panel.hidden = panel.getAttribute("data-bio-panel") !== target;
+      });
+    });
+  });
+})();
+</script>
 
 <script>
 (function(){
@@ -370,9 +524,10 @@ h1 span{color:var(--lime)}
   var contactModal = document.getElementById("ssmContactModal");
   var enquiryForm = document.getElementById("ssmEnquiryForm");
   /*
-    APP DOWNLOAD:
-    Replace YOUR_GITHUB_APP_FILE_LINK above with the direct/raw GitHub link
-    to your APK/app file. The button will then open/download that file.
+    APP DOWNLOADS:
+    Shop Manager app: /app-release (6).apk
+    Dynamic Storefront Bio Admin app: /app-release (8).apk
+    Both APKs are published in the GitHub repository root.
   */
 
   function openModal(modal){
@@ -439,7 +594,7 @@ h1 span{color:var(--lime)}
     */
 
     var text = [
-      "Simple Shop enquiry",
+      "Simple Shop — ₹200 / 6 months bundle enquiry",
       "Name: " + owner,
       "Phone: " + phone,
       "Message: " + (message || "-")
@@ -456,4 +611,4 @@ h1 span{color:var(--lime)}
 })();
 </script>
 </body>
-</html>
+                                                                                                             </html>
