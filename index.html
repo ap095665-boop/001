@@ -6,91 +6,42 @@
 <meta name="theme-color" content="#090a0d">
 <title>Simple Shop Manager — Dynamic Storefront Bio + Admin App</title>
 <style>
-:root{
-  --bg:#090a0d;
-  --surface:#111318;
-  --surface2:#171a21;
-  --text:#f7f8fa;
-  --muted:#a7acb7;
-  --line:rgba(255,255,255,.10);
-  --lime:#c9ff3d;
-  --lime2:#e3ff8c;
-  --purple:#8d6cff;
-  --shadow:0 30px 90px rgba(0,0,0,.48);
+:root{ --bg:#090a0d; --surface:#111318; --surface2:#171a21; --text:#f7f8fa; --muted:#a7acb7; --line:rgba(255,255,255,.10); --lime:#c9ff3d; --lime2:#e3ff8c; --purple:#8d6cff; --shadow:0 30px 90px rgba(0,0,0,.48);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;background:var(--bg)}
-body{
-  margin:0;
-  min-width:320px;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  overflow-x:hidden;
+body{ margin:0; min-width:320px; background:var(--bg); color:var(--text); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; overflow-x:hidden;
 }
 a{color:inherit}
 button,input,textarea{font:inherit}
 button{cursor:pointer}
-.site{
-  min-height:100vh;
-  position:relative;
-  overflow:hidden;
-  background:
-    radial-gradient(700px 500px at 78% 20%,rgba(141,108,255,.13),transparent 70%),
-    radial-gradient(600px 450px at 12% 80%,rgba(201,255,61,.08),transparent 70%),
-    var(--bg);
+.site{ min-height:100vh; position:relative; overflow:hidden; background: radial-gradient(700px 500px at 78% 20%,rgba(141,108,255,.13),transparent 70%), radial-gradient(600px 450px at 12% 80%,rgba(201,255,61,.08),transparent 70%), var(--bg);
 }
-.site:before{
-  content:"";
-  position:absolute;inset:0;pointer-events:none;opacity:.22;
-  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-  background-size:48px 48px;
-  mask-image:linear-gradient(to bottom,black,transparent 85%);
+.site:before{ content:""; position:absolute;inset:0;pointer-events:none;opacity:.22; background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px); background-size:48px 48px; mask-image:linear-gradient(to bottom,black,transparent 85%);
 }
 .container{width:min(1180px,calc(100% - 40px));margin:auto}
-.header{
-  position:relative;z-index:10;
-  height:78px;display:flex;align-items:center;justify-content:space-between;
+.header{ position:relative;z-index:10; height:78px;display:flex;align-items:center;justify-content:space-between;
 }
 .brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:900;letter-spacing:-.04em}
-.brand-mark{
-  width:36px;height:36px;border-radius:12px;background:var(--lime);color:#080a0d;
-  display:grid;place-items:center;font-weight:950;box-shadow:0 0 30px rgba(201,255,61,.16);
+.brand-mark{ width:36px;height:36px;border-radius:12px;background:var(--lime);color:#080a0d; display:grid;place-items:center;font-weight:950;box-shadow:0 0 30px rgba(201,255,61,.16);
 }
 .brand-name{font-size:17px}
 .nav{display:flex;align-items:center;gap:4px}
 .nav a{text-decoration:none;color:#c7cad2;font-size:13px;padding:10px 12px;border-radius:10px}
 .nav a:hover{color:#fff;background:#ffffff08}
 .nav .nav-cta{background:#fff;color:#0a0b0d;font-weight:850;padding:11px 15px}
-.hero{
-  position:relative;z-index:2;
-  min-height:calc(100vh - 78px);
-  display:grid;grid-template-columns:minmax(0,1.02fr) minmax(360px,.98fr);
-  align-items:center;gap:50px;padding:35px 0 70px;
+.hero{ position:relative;z-index:2; min-height:calc(100vh - 78px); display:grid;grid-template-columns:minmax(0,1.02fr) minmax(360px,.98fr); align-items:center;gap:50px;padding:35px 0 70px;
 }
-.eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  border:1px solid var(--line);background:rgba(255,255,255,.035);
-  padding:8px 11px;border-radius:999px;color:#d6d9df;font-size:11px;font-weight:800;
-  backdrop-filter:blur(12px);
+.eyebrow{ display:inline-flex;align-items:center;gap:8px; border:1px solid var(--line);background:rgba(255,255,255,.035); padding:8px 11px;border-radius:999px;color:#d6d9df;font-size:11px;font-weight:800; backdrop-filter:blur(12px);
 }
 .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 14px var(--lime)}
-h1{
-  margin:21px 0 0;
-  max-width:720px;
-  font-size:clamp(54px,7vw,92px);
-  line-height:.88;letter-spacing:-.075em;font-weight:950;
+h1{ margin:21px 0 0; max-width:720px; font-size:clamp(54px,7vw,92px); line-height:.88;letter-spacing:-.075em;font-weight:950;
 }
 h1 span{color:var(--lime)}
-.hero-copy>p{
-  max-width:590px;margin:25px 0 25px;
-  color:var(--muted);font-size:clamp(15px,1.6vw,18px);line-height:1.55;
+.hero-copy>p{ max-width:590px;margin:25px 0 25px; color:var(--muted);font-size:clamp(15px,1.6vw,18px);line-height:1.55;
 }
 .actions{display:flex;gap:10px;flex-wrap:wrap}
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  min-height:48px;padding:0 17px;border-radius:14px;border:1px solid var(--line);
-  text-decoration:none;font-weight:850;font-size:14px;transition:transform .2s,box-shadow .2s,background .2s;
+.btn{ display:inline-flex;align-items:center;justify-content:center;gap:8px; min-height:48px;padding:0 17px;border-radius:14px;border:1px solid var(--line); text-decoration:none;font-weight:850;font-size:14px;transition:transform .2s,box-shadow .2s,background .2s;
 }
 .btn:hover{transform:translateY(-2px)}
 .btn-primary{background:var(--lime);color:#090b0d;border-color:transparent;box-shadow:0 15px 40px rgba(201,255,61,.12)}
@@ -98,16 +49,9 @@ h1 span{color:var(--lime)}
 .proof{display:flex;flex-wrap:wrap;gap:15px 22px;margin-top:20px;color:#7f8490;font-size:11px}
 .proof b{color:#d8dbe0}
 .product-stage{position:relative;min-height:570px;display:grid;place-items:center}
-.aura{
-  position:absolute;width:520px;max-width:100%;aspect-ratio:1;border-radius:50%;
-  background:radial-gradient(circle,rgba(141,108,255,.24),transparent 66%);
-  filter:blur(18px);animation:breathe 5s ease-in-out infinite;
+.aura{ position:absolute;width:520px;max-width:100%;aspect-ratio:1;border-radius:50%; background:radial-gradient(circle,rgba(141,108,255,.24),transparent 66%); filter:blur(18px);animation:breathe 5s ease-in-out infinite;
 }
-.phone{
-  position:relative;z-index:2;width:290px;height:570px;padding:7px;
-  border-radius:38px;background:#1d2027;border:1px solid rgba(255,255,255,.14);
-  box-shadow:var(--shadow),0 0 70px rgba(141,108,255,.12);
-  transform:rotate(3deg);animation:phoneFloat 5s ease-in-out infinite;
+.phone{ position:relative;z-index:2;width:290px;height:570px;padding:7px; border-radius:38px;background:#1d2027;border:1px solid rgba(255,255,255,.14); box-shadow:var(--shadow),0 0 70px rgba(141,108,255,.12); transform:rotate(3deg);animation:phoneFloat 5s ease-in-out infinite;
 }
 .phone-screen{height:100%;border-radius:31px;overflow:hidden;background:#0c0e12;padding:35px 13px 13px}
 .notch{position:absolute;z-index:3;top:12px;left:50%;transform:translateX(-50%);width:85px;height:19px;border-radius:0 0 14px 14px;background:#050608}
@@ -122,11 +66,7 @@ h1 span{color:var(--lime)}
 .fake-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}
 .fake-key{height:43px;display:grid;place-items:center;border-radius:11px;background:#171a20;border:1px solid rgba(255,255,255,.06);font-size:12px;font-weight:850}
 .fake-key.record{grid-column:1/-1;background:var(--lime);color:#080a0c;border-color:transparent}
-.badge{
-  position:absolute;z-index:4;right:-32px;bottom:85px;
-  background:#fff;color:#0b0c0f;border-radius:15px;padding:11px 13px;
-  box-shadow:0 20px 50px rgba(0,0,0,.5);font-size:11px;font-weight:900;
-  animation:badgeFloat 4s ease-in-out infinite;
+.badge{ position:absolute;z-index:4;right:-32px;bottom:85px; background:#fff;color:#0b0c0f;border-radius:15px;padding:11px 13px; box-shadow:0 20px 50px rgba(0,0,0,.5);font-size:11px;font-weight:900; animation:badgeFloat 4s ease-in-out infinite;
 }
 .badge small{display:block;color:#737782;font-size:8px;margin-top:3px}
 .section{position:relative;z-index:2;padding:85px 0}
@@ -135,29 +75,18 @@ h1 span{color:var(--lime)}
 .section h2{font-size:clamp(32px,4.5vw,55px);line-height:.95;letter-spacing:-.06em;margin:10px 0}
 .section-head p{color:var(--muted);line-height:1.55;margin:0}
 .feature-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-.feature{
-  min-height:150px;padding:18px;border:1px solid var(--line);border-radius:18px;
-  background:rgba(255,255,255,.035);transition:transform .25s,border-color .25s,background .25s;
+.feature{ min-height:150px;padding:18px;border:1px solid var(--line);border-radius:18px; background:rgba(255,255,255,.035);transition:transform .25s,border-color .25s,background .25s;
 }
 .feature:hover{transform:translateY(-5px);border-color:rgba(201,255,61,.35);background:rgba(255,255,255,.055)}
 .feature-icon{font-size:22px}.feature h3{font-size:14px;margin:15px 0 6px}.feature p{font-size:11px;color:#858b96;line-height:1.45;margin:0}
-.offer{
-  display:grid;grid-template-columns:1fr auto;gap:25px;align-items:center;
-  border:1px solid rgba(201,255,61,.18);background:linear-gradient(110deg,rgba(201,255,61,.08),rgba(141,108,255,.07));
-  border-radius:24px;padding:28px;
+.offer{ display:grid;grid-template-columns:1fr auto;gap:25px;align-items:center; border:1px solid rgba(201,255,61,.18);background:linear-gradient(110deg,rgba(201,255,61,.08),rgba(141,108,255,.07)); border-radius:24px;padding:28px;
 }
 .offer h2{margin:0;font-size:clamp(28px,4vw,48px)}.offer p{color:var(--muted);margin:8px 0 0;line-height:1.5}
 .footer{padding:30px 0 45px;border-top:1px solid var(--line);color:#707581;font-size:11px}
-.modal{
-  position:fixed;z-index:100;inset:0;padding:20px;
-  display:none;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.72);backdrop-filter:blur(12px);
+.modal{ position:fixed;z-index:100;inset:0;padding:20px; display:none;align-items:center;justify-content:center; background:rgba(0,0,0,.72);backdrop-filter:blur(12px);
 }
 .modal.is-open{display:flex}
-.modal-card{
-  width:min(460px,100%);max-height:min(90vh,700px);overflow:auto;
-  background:#15181e;border:1px solid rgba(255,255,255,.13);border-radius:24px;padding:23px;box-shadow:var(--shadow);
-  animation:modalIn .25s ease both;
+.modal-card{ width:min(460px,100%);max-height:min(90vh,700px);overflow:auto; background:#15181e;border:1px solid rgba(255,255,255,.13);border-radius:24px;padding:23px;box-shadow:var(--shadow); animation:modalIn .25s ease both;
 }
 .modal-top{display:flex;align-items:center;justify-content:space-between;gap:15px}
 .modal h2{margin:0;font-size:26px;letter-spacing:-.04em}.modal p{color:var(--muted);font-size:13px;line-height:1.55}
@@ -169,50 +98,13 @@ h1 span{color:var(--lime)}
 @keyframes badgeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes breathe{0%,100%{transform:scale(.93);opacity:.7}50%{transform:scale(1.06);opacity:1}}
 @keyframes modalIn{from{opacity:0;transform:translateY(15px) scale(.98)}to{opacity:1;transform:none}}
-@media(max-width:900px){
-  .container{width:min(100% - 32px,650px)}
-  .header{height:70px}
-  .nav a:not(.nav-cta){display:none}
-  .hero{display:flex;flex-direction:column;align-items:stretch;gap:35px;padding:38px 0 65px;min-height:auto}
-  h1{font-size:clamp(52px,14vw,76px)}
-  .hero-copy>p{font-size:15px;margin:20px 0 22px}
-  .product-stage{min-height:520px;width:100%}
-  .phone{width:270px;height:525px}
-  .badge{right:calc(50% - 175px);bottom:58px}
-  .feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .feature:last-child{grid-column:1/-1}
-  .offer{grid-template-columns:1fr}
+@media(max-width:900px){ .container{width:min(100% - 32px,650px)} .header{height:70px} .nav a:not(.nav-cta){display:none} .hero{display:flex;flex-direction:column;align-items:stretch;gap:35px;padding:38px 0 65px;min-height:auto} h1{font-size:clamp(52px,14vw,76px)} .hero-copy>p{font-size:15px;margin:20px 0 22px} .product-stage{min-height:520px;width:100%} .phone{width:270px;height:525px} .badge{right:calc(50% - 175px);bottom:58px} .feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))} .feature:last-child{grid-column:1/-1} .offer{grid-template-columns:1fr}
 }
-@media(max-width:520px){
-  .container{width:calc(100% - 28px)}
-  .brand-name{font-size:16px}
-  .nav .nav-cta{padding:9px 11px;font-size:11px}
-  .hero{padding-top:30px}
-  .actions{display:grid;grid-template-columns:1fr}
-  .btn{width:100%}
-  .proof{gap:8px 15px}
-  .product-stage{min-height:500px}
-  .phone{width:250px;height:490px}
-  .phone-screen{padding-top:32px}
-  .fake-key{height:39px}
-  .badge{right:calc(50% - 150px);bottom:48px}
-  .feature-grid{grid-template-columns:1fr}
-  .feature:last-child{grid-column:auto}
-  .section{padding:65px 0}
-  .offer{padding:22px}
+@media(max-width:520px){ .container{width:calc(100% - 28px)} .brand-name{font-size:16px} .nav .nav-cta{padding:9px 11px;font-size:11px} .hero{padding-top:30px} .actions{display:grid;grid-template-columns:1fr} .btn{width:100%} .proof{gap:8px 15px} .product-stage{min-height:500px} .phone{width:250px;height:490px} .phone-screen{padding-top:32px} .fake-key{height:39px} .badge{right:calc(50% - 150px);bottom:48px} .feature-grid{grid-template-columns:1fr} .feature:last-child{grid-column:auto} .section{padding:65px 0} .offer{padding:22px}
 }
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}
-}
-
-.bio-intro{position:relative}
-.bio-demo-shell{
-  display:grid;grid-template-columns:.86fr 1.14fr;gap:24px;align-items:center;
-  border:1px solid rgba(255,255,255,.11);border-radius:28px;padding:28px;
-  background:
-    radial-gradient(420px 280px at 82% 45%,rgba(141,108,255,.16),transparent 72%),
-    linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.018));
-  box-shadow:0 28px 90px rgba(0,0,0,.28);overflow:hidden;
+@media(prefers-reduced-motion:reduce){ *,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}
+} .bio-intro{position:relative}
+.bio-demo-shell{ display:grid;grid-template-columns:.86fr 1.14fr;gap:24px;align-items:center; border:1px solid rgba(255,255,255,.11);border-radius:28px;padding:28px; background: radial-gradient(420px 280px at 82% 45%,rgba(141,108,255,.16),transparent 72%), linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.018)); box-shadow:0 28px 90px rgba(0,0,0,.28);overflow:hidden;
 }
 .bio-demo-copy{min-width:0}
 .bio-live-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(201,255,61,.18);background:rgba(201,255,61,.06);color:#dce3d0;border-radius:999px;padding:7px 10px;font-size:10px;font-weight:850}
@@ -225,10 +117,7 @@ h1 span{color:var(--lime)}
 .bio-value-row{display:flex;justify-content:space-between;gap:15px;align-items:center;padding-top:16px;border-top:1px solid var(--line);font-size:11px;color:#777d89}
 .bio-value-row b{color:#fff;font-size:13px}
 .bio-phone-wrap{position:relative;display:grid;place-items:center;min-height:520px}
-.bio-phone{
-  width:min(300px,76vw);height:555px;padding:7px;border-radius:38px;background:#1b1e25;
-  border:1px solid rgba(255,255,255,.15);box-shadow:0 35px 100px rgba(0,0,0,.48),0 0 70px rgba(141,108,255,.12);
-  transform:rotate(2deg);transition:transform .35s ease;
+.bio-phone{ width:min(300px,76vw);height:555px;padding:7px;border-radius:38px;background:#1b1e25; border:1px solid rgba(255,255,255,.15);box-shadow:0 35px 100px rgba(0,0,0,.48),0 0 70px rgba(141,108,255,.12); transform:rotate(2deg);transition:transform .35s ease;
 }
 .bio-phone:hover{transform:rotate(0deg) translateY(-4px)}
 .bio-phone-top{height:25px;padding:2px 13px;display:flex;justify-content:space-between;align-items:center;color:#777d89;font-size:8px}
@@ -250,387 +139,26 @@ h1 span{color:var(--lime)}
 .bio-contact-card button{margin-top:11px;width:100%;background:var(--lime);color:#090b0d;border-color:transparent}
 .bio-float{position:absolute;z-index:3;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.93);color:#0a0c0f;border-radius:12px;padding:9px 11px;font-size:9px;font-weight:900;box-shadow:0 18px 45px rgba(0,0,0,.35);animation:badgeFloat 4s ease-in-out infinite}
 .bio-float-one{right:2%;top:18%}.bio-float-two{left:3%;bottom:17%;animation-delay:-1.5s}
-@media(max-width:900px){
-  .bio-demo-shell{grid-template-columns:1fr;padding:22px}
-  .bio-phone-wrap{min-height:560px}
+@media(max-width:900px){ .bio-demo-shell{grid-template-columns:1fr;padding:22px} .bio-phone-wrap{min-height:560px}
 }
-@media(max-width:520px){
-  .bio-demo-shell{padding:18px;border-radius:22px}
-  .bio-phone{height:520px;width:260px}
-  .bio-phone-wrap{min-height:535px}
-  .bio-float-one{right:0;top:12%}.bio-float-two{left:0;bottom:13%}
-  .bio-value-row{align-items:flex-start;flex-direction:column}
-}
-
-.digital-bio-banner{
-  margin:0 0 24px;border:1px solid rgba(201,255,61,.22);
-  background:linear-gradient(115deg,rgba(201,255,61,.10),rgba(141,108,255,.10));
-  border-radius:24px;padding:24px 28px;display:grid;
-  grid-template-columns:1fr auto;align-items:center;gap:24px;
-  box-shadow:0 20px 60px rgba(0,0,0,.18);
+@media(max-width:520px){ .bio-demo-shell{padding:18px;border-radius:22px} .bio-phone{height:520px;width:260px} .bio-phone-wrap{min-height:535px} .bio-float-one{right:0;top:12%}.bio-float-two{left:0;bottom:13%} .bio-value-row{align-items:flex-start;flex-direction:column}
+} .digital-bio-banner{ margin:0 0 24px;border:1px solid rgba(201,255,61,.22); background:linear-gradient(115deg,rgba(201,255,61,.10),rgba(141,108,255,.10)); border-radius:24px;padding:24px 28px;display:grid; grid-template-columns:1fr auto;align-items:center;gap:24px; box-shadow:0 20px 60px rgba(0,0,0,.18);
 }
 .digital-bio-banner h2{margin:0;font-size:clamp(25px,3.5vw,40px);line-height:1;letter-spacing:-.055em}
 .digital-bio-banner p{margin:9px 0 0;color:var(--muted);line-height:1.5;font-size:13px;max-width:680px}
 .digital-bio-banner .banner-points{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px;color:#cfd3da;font-size:11px;font-weight:750}
 .digital-bio-banner .banner-points span::before{content:"✓";color:var(--lime);margin-right:5px;font-weight:900}
 @media(max-width:900px){.digital-bio-banner{grid-template-columns:1fr}}
-@media(max-width:520px){.digital-bio-banner{padding:20px}.digital-bio-banner .btn{width:100%}}
-
-
-</style>
+@media(max-width:520px){.digital-bio-banner{padding:20px}.digital-bio-banner .btn{width:100%}} </style>
 </head>
 <body>
-<div class="site" id="ssmMarketingSite">
-  <header class="header container">
-    <a class="brand" href="#top" data-scroll="top" aria-label="Simple Shop home">
-      <span class="brand-mark">S</span><span class="brand-name">Simple Shop</span>
-    </a>
-    <nav class="nav" aria-label="Main navigation">
-      <a href="#features" data-scroll="features">Features</a>
-      <a href="#demo" data-open="demo">See demo</a>
-      <a class="nav-cta" href="#contact" data-open="contact">Get the apps separately</a>
-    </nav>
-  </header>
-
-  <main id="top">
-    <section class="hero container">
-      <div class="hero-copy">
-        <div class="eyebrow"><i></i> Built for small shops</div>
-        <h1>Your shop.<br><span>Simplified.</span></h1>
-        <p>Record sales, track purchases and manage everyday shop tasks from the Admin App — while your Dynamic Storefront Bio gives customers a premium place to see your shop, offers and contact options.</p>
-        <div class="actions">
-          <a class="btn btn-primary" href="#contact" data-open="contact">Get Shop Manager · ₹99 / 6 months</a>
-          <a class="btn btn-secondary" href="#demo" data-open="demo">▶ See how it works</a>
-          <a class="btn btn-secondary" id="ssmDownloadApp" href="/app-release (6).apk" download>⬇ Shop Manager app · ₹99 / 6 months</a>
-          <a class="btn btn-secondary" id="bioAdminDownloadApp" href="/app-release (23).apk" download>⚡ Bio Admin app · ₹300 / 6 months</a>
-        </div>
-        <div class="proof">
-          <span>✓ <b>Shop Manager · ₹99 / 6 months</b></span>
-          <span>✓ <b>Dynamic Storefront Bio</b></span>
-          <span>✓ <b>Bio Admin · ₹300 / 6 months</b></span>
-        </div>
-      </div>
-
-      <div class="product-stage" aria-label="Sales Counter preview">
-        <div class="aura"></div>
-        <div class="phone">
-          <div class="notch"></div>
-          <div class="phone-screen">
-            <div class="app-title"><strong>Sales Counter</strong><span>15 Aug 2026</span></div>
-            <div class="revenue-card">
-              <div class="label">TODAY'S SALES</div>
-              <div class="revenue-value">₹12,450</div>
-              <div class="mini-stats">
-                <div class="mini-stat"><small>CUSTOMERS</small><b>87</b></div>
-                <div class="mini-stat"><small>AVG / SALE</small><b>₹143</b></div>
-              </div>
-            </div>
-            <div class="fake-pad" aria-hidden="true">
-              <div class="fake-key">1</div><div class="fake-key">2</div><div class="fake-key">3</div>
-              <div class="fake-key">4</div><div class="fake-key">5</div><div class="fake-key">6</div>
-              <div class="fake-key">7</div><div class="fake-key">8</div><div class="fake-key">9</div>
-              <div class="fake-key">C</div><div class="fake-key">0</div><div class="fake-key">⌫</div>
-              <div class="fake-key record">✓ RECORD SALE</div>
-            </div>
-          </div>
-        </div>
-        <div class="badge">📦 Stock purchased<small>Today · ₹4,200</small></div>
-      </div>
-    </section>
-
-    <section class="section container" id="features">
-      <div class="section-head">
-        <div class="kicker">Everything simple</div>
-        <h2>Two products. Choose what you need.</h2>
-        <p>Choose the Shop Manager app or the Dynamic Storefront Bio separately. Each has its own 6-month plan.</p>
-      </div>
-      <div class="feature-grid">
-        <article class="feature"><div class="feature-icon">💰</div><h3>Sales</h3><p>Enter an amount, tap record, and your daily total updates instantly.</p></article>
-        <article class="feature"><div class="feature-icon">📦</div><h3>Stock purchases</h3><p>Keep a simple record of what you purchased and how much you spent.</p></article>
-        <article class="feature"><div class="feature-icon">📝</div><h3>Notes & reminders</h3><p>Keep important shop tasks, supplier notes and reminders together.</p></article>
-        <article class="feature"><div class="feature-icon">🧮</div><h3>Calculator</h3><p>A quick calculator is always available when you need it.</p></article>
-        <article class="feature"><div class="feature-icon">🌐</div><h3>Dynamic Storefront Bio</h3><p>Give customers one premium link for shop status, offers, services, contact and more.</p></article>
-      </div>
-    </section>
-
-
-    <section class="section container" id="digital-bio">
-      <div class="bio-intro">
-        <div class="section-head">
-          <div class="kicker">DYNAMIC STOREFRONT BIO · ₹300 / 6 MONTHS</div>
-          <h2>Your shop gets a digital storefront people can actually use.</h2>
-          <p>Show your live status, offers, products, services and contact options in one polished page. Your Admin App controls the information customers see.</p>
-        </div>
-
-        <div class="bio-demo-shell">
-          <div class="bio-demo-copy">
-            <div class="bio-live-pill"><i></i> Live customer preview</div>
-            <h3>See the storefront in action.</h3>
-            <p>Tap the sections below to preview how a customer's experience can change without rebuilding the page.</p>
-            <div class="bio-demo-tabs" role="tablist" aria-label="Dynamic Bio preview">
-              <button class="bio-tab is-active" type="button" data-bio-tab="home" role="tab" aria-selected="true">Store</button>
-              <button class="bio-tab" type="button" data-bio-tab="offers" role="tab" aria-selected="false">Offers</button>
-              <button class="bio-tab" type="button" data-bio-tab="contact" role="tab" aria-selected="false">Contact</button>
-            </div>
-            <div class="bio-value-row">
-              <span>Controlled from Bio Admin App</span>
-              <b>Shop Manager ₹99 / 6 months</b>
-            </div>
-          </div>
-
-          <div class="bio-phone-wrap">
-            <div class="bio-phone">
-              <div class="bio-phone-top">
-                <span>9:41</span><span>● ● ●</span>
-              </div>
-              <div class="bio-cover">
-                <div class="bio-logo">S</div>
-                <div>
-                  <strong>Sunrise Mini Mart</strong>
-                  <small>Open · Closes 9:30 PM</small>
-                </div>
-              </div>
-
-              <div class="bio-content">
-                <div class="bio-state" data-bio-panel="home">
-                  <div class="bio-action-row">
-                    <button type="button">📞 Call</button>
-                    <button type="button">💬 WhatsApp</button>
-                    <button type="button">📍 Map</button>
-                  </div>
-                  <div class="bio-card">
-                    <span class="bio-card-label">TODAY</span>
-                    <h4>Fresh essentials, close to you.</h4>
-                    <p>Rice · Groceries · Snacks · Household essentials</p>
-                  </div>
-                  <div class="bio-mini-grid">
-                    <div><b>Menu</b><small>Browse items</small></div>
-                    <div><b>Pre-order</b><small>Save your time</small></div>
-                  </div>
-                </div>
-
-                <div class="bio-state" data-bio-panel="offers" hidden>
-                  <div class="bio-offer-card">
-                    <span>LIVE OFFER</span>
-                    <strong>10% OFF</strong>
-                    <p>Selected grocery essentials today.</p>
-                    <button type="button">View offer →</button>
-                  </div>
-                  <div class="bio-card">
-                    <span class="bio-card-label">SHOP STATUS</span>
-                    <h4>Open right now</h4>
-                    <p>Customers can see updates without calling the shop.</p>
-                  </div>
-                </div>
-
-                <div class="bio-state" data-bio-panel="contact" hidden>
-                  <div class="bio-contact-card">
-                    <span class="bio-card-label">CONTACT</span>
-                    <h4>Sunrise Mini Mart</h4>
-                    <p>Call, WhatsApp, visit or send an enquiry from one page.</p>
-                    <button type="button">💬 Enquire on WhatsApp</button>
-                  </div>
-                  <div class="bio-card">
-                    <span class="bio-card-label">SAVE</span>
-                    <h4>Bookmark this storefront</h4>
-                    <p>Come back anytime for live shop updates and offers.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="bio-float bio-float-one">✓ Live status</div>
-            <div class="bio-float bio-float-two">⚡ Instant offer</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section container" id="pricing">
-      <div class="section-head">
-        <div class="kicker">CHOOSE SEPARATELY</div>
-        <h2>Pick the product you need.</h2>
-        <p>Bundle both products for ₹300 / 6 months, or choose either product separately.</p>
-      </div>
-      <div class="feature-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
-        <article class="feature">
-          <div class="feature-icon">📱</div>
-          <h3>Shop Manager App</h3>
-          <p>Sales, stock purchases, notes, reminders and calculator for everyday shop management.</p>
-          <div style="margin-top:18px;font-size:20px;font-weight:950">₹99 <span style="font-size:11px;color:#858b96;font-weight:700">/ 6 months</span></div>
-        </article>
-        <article class="feature">
-          <div class="feature-icon">🌐</div>
-          <h3>Dynamic Storefront Bio</h3>
-          <p>Premium customer-facing shop page with live status, offers, products, services and contact options, controlled through the Bio Admin app.</p>
-          <div style="margin-top:18px;font-size:20px;font-weight:950">₹300 <span style="font-size:11px;color:#858b96;font-weight:700">/ 6 months</span></div>
-        </article>
-        <article class="feature">
-          <div class="feature-icon">✨</div>
-          <h3>Complete Bundle</h3>
-          <p>Shop Manager app + Dynamic Storefront Bio + Bio Admin app together.</p>
-          <div style="margin-top:18px;font-size:20px;font-weight:950">₹350 <span style="font-size:11px;color:#858b96;font-weight:700">/ 6 months</span></div>
-        </article>
-
-      </div>
-    </section>
-
-
-  </main>
-
-  <footer class="footer">
-    <div class="container">© 2026 Simple Shop Manager · Built for simple everyday shop records.</div>
-  </footer>
-</div>
-
-<div class="modal" id="ssmDemoModal" role="dialog" aria-modal="true" aria-labelledby="ssmDemoTitle">
-  <div class="modal-card">
-    <div class="modal-top">
-      <h2 id="ssmDemoTitle">See how it works</h2>
-      <button class="close-btn" type="button" data-close aria-label="Close demo">×</button>
-    </div>
-    <p>Four simple steps. No accounting knowledge required.</p>
-    <div class="demo-list">
-      <div class="demo-step"><b>01</b> · Enter ₹50</div>
-      <div class="demo-step"><b>02</b> · Tap <b>Record Sale</b></div>
-      <div class="demo-step"><b>03</b> · Your daily total becomes ₹50</div>
-      <div class="demo-step"><b>04</b> · Repeat for every customer</div>
-    </div>
-    <button class="btn btn-primary" type="button" data-close style="width:100%">Close</button>
-  </div>
-</div>
-
-<div class="modal" id="ssmContactModal" role="dialog" aria-modal="true" aria-labelledby="ssmContactTitle">
-  <div class="modal-card">
-    <div class="modal-top">
-      <h2 id="ssmContactTitle">Choose Your Product</h2>
-      <button class="close-btn" type="button" data-close aria-label="Close contact form">×</button>
-    </div>
-    <p>Send an enquiry for the ₹300 / 6 months bundle, or ask about either product separately.</p>
-    <form class="form" id="ssmEnquiryForm">
-      <label>Shop / owner name<input id="ssmOwner" required autocomplete="name"></label>
-      <label>Mobile number<input id="ssmPhone" required inputmode="tel" autocomplete="tel"></label>
-      <label>Message<textarea id="ssmMessage" placeholder="Optional"></textarea></label>
-      <button class="btn btn-primary" type="submit">Enquire</button>
-      <p class="modal-note">Before publishing, replace the WhatsApp destination in the JavaScript with your business number.</p>
-    </form>
-  </div>
-</div>
-
-<script>
-(function(){
-  "use strict";
-  var tabs = document.querySelectorAll("[data-bio-tab]");
-  var panels = document.querySelectorAll("[data-bio-panel]");
-  tabs.forEach(function(tab){
-    tab.addEventListener("click", function(){
-      var target = tab.getAttribute("data-bio-tab");
-      tabs.forEach(function(item){
-        var active = item === tab;
-        item.classList.toggle("is-active", active);
-        item.setAttribute("aria-selected", active ? "true" : "false");
-      });
-      panels.forEach(function(panel){
-        panel.hidden = panel.getAttribute("data-bio-panel") !== target;
-      });
-    });
-  });
+<div class="site" id="ssmMarketingSite"> <header class="header container"> <a class="brand" href="#top" data-scroll="top" aria-label="Simple Shop home"> <span class="brand-mark">S</span><span class="brand-name">Simple Shop</span> </a> <nav class="nav" aria-label="Main navigation"> <a href="#features" data-scroll="features">Features</a> <a href="#demo" data-open="demo">See demo</a> <a class="nav-cta" href="#contact" data-open="contact">Get the apps separately</a> </nav> </header> <main id="top"> <section class="hero container"> <div class="hero-copy"> <div class="eyebrow"><i></i> Built for small shops</div> <h1>Your shop.<br><span>Simplified.</span></h1> <p>Record sales, track purchases and manage everyday shop tasks from the Admin App — while your Dynamic Storefront Bio gives customers a premium place to see your shop, offers and contact options.</p> <div class="actions"> <a class="btn btn-primary" href="#contact" data-open="contact">Get Shop Manager · ₹120 one time</a> <a class="btn btn-secondary" href="#demo" data-open="demo">▶ See how it works</a> <a class="btn btn-secondary" id="ssmDownloadApp" href="/app-release (6).apk" download>⬇ Shop Manager app · ₹120 one time</a> <a class="btn btn-secondary" id="bioAdminDownloadApp" href="/app-release (23).apk" download>⚡ Bio Admin app · ₹280 / 6 months</a> </div> <div class="proof"> <span>✓ <b>Shop Manager · ₹120 one time</b></span> <span>✓ <b>Dynamic Storefront Bio</b></span> <span>✓ <b>Bio Admin · ₹280 / 6 months</b></span> </div> </div> <div class="product-stage" aria-label="Sales Counter preview"> <div class="aura"></div> <div class="phone"> <div class="notch"></div> <div class="phone-screen"> <div class="app-title"><strong>Sales Counter</strong><span>15 Aug 2026</span></div> <div class="revenue-card"> <div class="label">TODAY'S SALES</div> <div class="revenue-value">₹12,450</div> <div class="mini-stats"> <div class="mini-stat"><small>CUSTOMERS</small><b>87</b></div> <div class="mini-stat"><small>AVG / SALE</small><b>₹143</b></div> </div> </div> <div class="fake-pad" aria-hidden="true"> <div class="fake-key">1</div><div class="fake-key">2</div><div class="fake-key">3</div> <div class="fake-key">4</div><div class="fake-key">5</div><div class="fake-key">6</div> <div class="fake-key">7</div><div class="fake-key">8</div><div class="fake-key">9</div> <div class="fake-key">C</div><div class="fake-key">0</div><div class="fake-key">⌫</div> <div class="fake-key record">✓ RECORD SALE</div> </div> </div> </div> <div class="badge">📦 Stock purchased<small>Today · ₹4,200</small></div> </div> </section> <section class="section container" id="features"> <div class="section-head"> <div class="kicker">Everything simple</div> <h2>Two products. Choose what you need.</h2> <p>Choose the Shop Manager app or the Dynamic Storefront Bio separately. Each has its own 6-month plan.</p> </div> <div class="feature-grid"> <article class="feature"><div class="feature-icon">💰</div><h3>Sales</h3><p>Enter an amount, tap record, and your daily total updates instantly.</p></article> <article class="feature"><div class="feature-icon">📦</div><h3>Stock purchases</h3><p>Keep a simple record of what you purchased and how much you spent.</p></article> <article class="feature"><div class="feature-icon">📝</div><h3>Notes & reminders</h3><p>Keep important shop tasks, supplier notes and reminders together.</p></article> <article class="feature"><div class="feature-icon">🧮</div><h3>Calculator</h3><p>A quick calculator is always available when you need it.</p></article> <article class="feature"><div class="feature-icon">🌐</div><h3>Dynamic Storefront Bio</h3><p>Give customers one premium link for shop status, offers, services, contact and more.</p></article> </div> </section> <section class="section container" id="digital-bio"> <div class="bio-intro"> <div class="section-head"> <div class="kicker">DYNAMIC STOREFRONT BIO · ₹300 / 6 MONTHS</div> <h2>Your shop gets a digital storefront people can actually use.</h2> <p>Show your live status, offers, products, services and contact options in one polished page. Your Admin App controls the information customers see.</p> </div> <div class="bio-demo-shell"> <div class="bio-demo-copy"> <div class="bio-live-pill"><i></i> Live customer preview</div> <h3>See the storefront in action.</h3> <p>Tap the sections below to preview how a customer's experience can change without rebuilding the page.</p> <div class="bio-demo-tabs" role="tablist" aria-label="Dynamic Bio preview"> <button class="bio-tab is-active" type="button" data-bio-tab="home" role="tab" aria-selected="true">Store</button> <button class="bio-tab" type="button" data-bio-tab="offers" role="tab" aria-selected="false">Offers</button> <button class="bio-tab" type="button" data-bio-tab="contact" role="tab" aria-selected="false">Contact</button> </div> <div class="bio-value-row"> <span>Controlled from Bio Admin App</span> <b>Shop Manager ₹120 one time</b> </div> </div> <div class="bio-phone-wrap"> <div class="bio-phone"> <div class="bio-phone-top"> <span>9:41</span><span>● ● ●</span> </div> <div class="bio-cover"> <div class="bio-logo">S</div> <div> <strong>Sunrise Mini Mart</strong> <small>Open · Closes 9:30 PM</small> </div> </div> <div class="bio-content"> <div class="bio-state" data-bio-panel="home"> <div class="bio-action-row"> <button type="button">📞 Call</button> <button type="button">💬 WhatsApp</button> <button type="button">📍 Map</button> </div> <div class="bio-card"> <span class="bio-card-label">TODAY</span> <h4>Fresh essentials, close to you.</h4> <p>Rice · Groceries · Snacks · Household essentials</p> </div> <div class="bio-mini-grid"> <div><b>Menu</b><small>Browse items</small></div> <div><b>Pre-order</b><small>Save your time</small></div> </div> </div> <div class="bio-state" data-bio-panel="offers" hidden> <div class="bio-offer-card"> <span>LIVE OFFER</span> <strong>10% OFF</strong> <p>Selected grocery essentials today.</p> <button type="button">View offer →</button> </div> <div class="bio-card"> <span class="bio-card-label">SHOP STATUS</span> <h4>Open right now</h4> <p>Customers can see updates without calling the shop.</p> </div> </div> <div class="bio-state" data-bio-panel="contact" hidden> <div class="bio-contact-card"> <span class="bio-card-label">CONTACT</span> <h4>Sunrise Mini Mart</h4> <p>Call, WhatsApp, visit or send an enquiry from one page.</p> <button type="button">💬 Enquire on WhatsApp</button> </div> <div class="bio-card"> <span class="bio-card-label">SAVE</span> <h4>Bookmark this storefront</h4> <p>Come back anytime for live shop updates and offers.</p> </div> </div> </div> </div> <div class="bio-float bio-float-one">✓ Live status</div> <div class="bio-float bio-float-two">⚡ Instant offer</div> </div> </div> </div> </section> <section class="section container" id="pricing"> <div class="section-head"> <div class="kicker">CHOOSE SEPARATELY</div> <h2>Pick the product you need.</h2> <p></p> </div> <div class="feature-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))"> <article class="feature"> <div class="feature-icon">📱</div> <h3>Shop Manager App</h3> <p>Sales, stock purchases, notes, reminders and calculator for everyday shop management.</p> <div style="margin-top:18px;font-size:20px;font-weight:950">₹120 <span style="font-size:11px;color:#858b96;font-weight:700">/ 6 months</span></div> </article> <article class="feature"> <div class="feature-icon">🌐</div> <h3>Dynamic Storefront Bio</h3> <p>Premium customer-facing shop page with live status, offers, products, services and contact options, controlled through the Bio Admin app.</p> <div style="margin-top:18px;font-size:20px;font-weight:950">₹280 <span style="font-size:11px;color:#858b96;font-weight:700">/ 6 months</span></div> </article> </div> </section> </main> <footer class="footer"> <div class="container">© 2026 Simple Shop Manager · Built for simple everyday shop records.</div> </footer>
+</div> <div class="modal" id="ssmDemoModal" role="dialog" aria-modal="true" aria-labelledby="ssmDemoTitle"> <div class="modal-card"> <div class="modal-top"> <h2 id="ssmDemoTitle">See how it works</h2> <button class="close-btn" type="button" data-close aria-label="Close demo">×</button> </div> <p>Four simple steps. No accounting knowledge required.</p> <div class="demo-list"> <div class="demo-step"><b>01</b> · Enter ₹50</div> <div class="demo-step"><b>02</b> · Tap <b>Record Sale</b></div> <div class="demo-step"><b>03</b> · Your daily total becomes ₹50</div> <div class="demo-step"><b>04</b> · Repeat for every customer</div> </div> <button class="btn btn-primary" type="button" data-close style="width:100%">Close</button> </div>
+</div> <div class="modal" id="ssmContactModal" role="dialog" aria-modal="true" aria-labelledby="ssmContactTitle"> <div class="modal-card"> <div class="modal-top"> <h2 id="ssmContactTitle">Choose Your Product</h2> <button class="close-btn" type="button" data-close aria-label="Close contact form">×</button> </div> <p></p> <form class="form" id="ssmEnquiryForm"> <label>Shop / owner name<input id="ssmOwner" required autocomplete="name"></label> <label>Mobile number<input id="ssmPhone" required inputmode="tel" autocomplete="tel"></label> <label>Message<textarea id="ssmMessage" placeholder="Optional"></textarea></label> <button class="btn btn-primary" type="submit">Enquire</button> <p class="modal-note">Before publishing, replace the WhatsApp destination in the JavaScript with your business number.</p> </form> </div>
+</div> <script>
+(function(){ "use strict"; var tabs = document.querySelectorAll("[data-bio-tab]"); var panels = document.querySelectorAll("[data-bio-panel]"); tabs.forEach(function(tab){ tab.addEventListener("click", function(){ var target = tab.getAttribute("data-bio-tab"); tabs.forEach(function(item){ var active = item === tab; item.classList.toggle("is-active", active); item.setAttribute("aria-selected", active ? "true" : "false"); }); panels.forEach(function(panel){ panel.hidden = panel.getAttribute("data-bio-panel") !== target; }); }); });
 })();
+</script> <script>
+(function(){ "use strict"; var demoModal = document.getElementById("ssmDemoModal"); var contactModal = document.getElementById("ssmContactModal"); var enquiryForm = document.getElementById("ssmEnquiryForm"); /* APP DOWNLOADS: Shop Manager app: /app-release (6).apk Dynamic Storefront Bio Admin app: /app-release (23).apk Both APKs are published in the GitHub repository root. */ function openModal(modal){ if(!modal) return; modal.classList.add("is-open"); document.body.style.overflow = "hidden"; var close = modal.querySelector("[data-close]"); if(close) close.focus(); } function closeAllModals(){ document.querySelectorAll(".modal.is-open").forEach(function(modal){ modal.classList.remove("is-open"); }); document.body.style.overflow = ""; } document.querySelectorAll("[data-open]").forEach(function(link){ link.addEventListener("click", function(event){ event.preventDefault(); var type = link.getAttribute("data-open"); if(type === "demo") openModal(demoModal); if(type === "contact") openModal(contactModal); }); }); document.querySelectorAll("[data-close]").forEach(function(button){ button.addEventListener("click", closeAllModals); }); document.querySelectorAll(".modal").forEach(function(modal){ modal.addEventListener("click", function(event){ if(event.target === modal) closeAllModals(); }); }); document.addEventListener("keydown", function(event){ if(event.key === "Escape") closeAllModals(); }); document.querySelectorAll("[data-scroll]").forEach(function(link){ link.addEventListener("click", function(event){ event.preventDefault(); var target = link.getAttribute("data-scroll"); var element = document.getElementById(target); if(element) element.scrollIntoView({behavior:"smooth",block:"start"}); else window.scrollTo({top:0,behavior:"smooth"}); }); }); enquiryForm.addEventListener("submit", function(event){ event.preventDefault(); var owner = document.getElementById("ssmOwner").value.trim(); var phone = document.getElementById("ssmPhone").value.trim(); var message = document.getElementById("ssmMessage").value.trim(); var destination = "916384300784"; /* IMPORTANT: Replace destination with your WhatsApp number in international format, without +, spaces or dashes. Example for India: 919876543210 */ var text = [ "Simple Shop — Product enquiry", "Name: " + owner, "Phone: " + phone, "Message: " + (message || "-") ].join("\n"); if(destination){ window.open("https://wa.me/" + destination + "?text=" + encodeURIComponent(text),"_blank","noopener"); }else{ // Safe fallback while the owner has not configured a number. navigator.clipboard && navigator.clipboard.writeText(text).catch(function(){}); alert("Enquiry prepared. Add your WhatsApp number in the HTML before publishing."); } }); })();
 </script>
-
-<script>
-(function(){
-  "use strict";
-
-  var demoModal = document.getElementById("ssmDemoModal");
-  var contactModal = document.getElementById("ssmContactModal");
-  var enquiryForm = document.getElementById("ssmEnquiryForm");
-  /*
-    APP DOWNLOADS:
-    Shop Manager app: /app-release (6).apk
-    Dynamic Storefront Bio Admin app: /app-release (23).apk
-    Both APKs are published in the GitHub repository root.
-  */
-
-  function openModal(modal){
-    if(!modal) return;
-    modal.classList.add("is-open");
-    document.body.style.overflow = "hidden";
-    var close = modal.querySelector("[data-close]");
-    if(close) close.focus();
-  }
-
-  function closeAllModals(){
-    document.querySelectorAll(".modal.is-open").forEach(function(modal){
-      modal.classList.remove("is-open");
-    });
-    document.body.style.overflow = "";
-  }
-
-  document.querySelectorAll("[data-open]").forEach(function(link){
-    link.addEventListener("click", function(event){
-      event.preventDefault();
-      var type = link.getAttribute("data-open");
-      if(type === "demo") openModal(demoModal);
-      if(type === "contact") openModal(contactModal);
-    });
-  });
-
-  document.querySelectorAll("[data-close]").forEach(function(button){
-    button.addEventListener("click", closeAllModals);
-  });
-
-  document.querySelectorAll(".modal").forEach(function(modal){
-    modal.addEventListener("click", function(event){
-      if(event.target === modal) closeAllModals();
-    });
-  });
-
-  document.addEventListener("keydown", function(event){
-    if(event.key === "Escape") closeAllModals();
-  });
-
-  document.querySelectorAll("[data-scroll]").forEach(function(link){
-    link.addEventListener("click", function(event){
-      event.preventDefault();
-      var target = link.getAttribute("data-scroll");
-      var element = document.getElementById(target);
-      if(element) element.scrollIntoView({behavior:"smooth",block:"start"});
-      else window.scrollTo({top:0,behavior:"smooth"});
-    });
-  });
-
-  enquiryForm.addEventListener("submit", function(event){
-    event.preventDefault();
-
-    var owner = document.getElementById("ssmOwner").value.trim();
-    var phone = document.getElementById("ssmPhone").value.trim();
-    var message = document.getElementById("ssmMessage").value.trim();
-
-    var destination = "916384300784"; 
-    /*
-      IMPORTANT:
-      Replace destination with your WhatsApp number in international format,
-      without +, spaces or dashes.
-      Example for India: 919876543210
-    */
-
-    var text = [
-      "Simple Shop — Product enquiry",
-      "Name: " + owner,
-      "Phone: " + phone,
-      "Message: " + (message || "-")
-    ].join("\n");
-
-    if(destination){
-      window.open("https://wa.me/" + destination + "?text=" + encodeURIComponent(text),"_blank","noopener");
-    }else{
-      // Safe fallback while the owner has not configured a number.
-      navigator.clipboard && navigator.clipboard.writeText(text).catch(function(){});
-      alert("Enquiry prepared. Add your WhatsApp number in the HTML before publishing.");
-    }
-  });
-
-})();
-</script>
-</body>
-  </html>
+</body> </html>
