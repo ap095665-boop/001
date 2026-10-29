@@ -161,6 +161,70 @@
     font-size:0.95rem;
   }
   .pill-btn svg{ width:1.15em; height:1.15em; flex-shrink:0; }
+  button.pill-btn{ border:0; padding:0; margin:0; cursor:pointer; appearance:none; -webkit-appearance:none; }
+
+  /* ---------- products popup ---------- */
+  .modal{
+    position:fixed; inset:0; z-index:100;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity .35s ease, visibility 0s linear .35s;
+  }
+  .modal.open{
+    opacity:1; visibility:visible; pointer-events:auto;
+    transition:opacity .35s ease;
+  }
+  .modal-backdrop{
+    position:absolute; inset:0;
+    background:rgba(11,10,12,0.72);
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  }
+  .modal-card{
+    position:relative;
+    width:min(100%,380px);
+    max-height:min(78vh,560px); max-height:min(78dvh,560px);
+    display:flex; flex-direction:column;
+    padding:28px 24px 24px;
+    border-radius:26px;
+    background:
+      radial-gradient(ellipse 80% 55% at 50% 0%, rgba(180,23,63,0.30), transparent 70%),
+      linear-gradient(170deg, #1a171c, #0f0d11);
+    box-shadow:0 0 0 1px rgba(201,161,90,0.4), 0 30px 70px -20px rgba(0,0,0,0.85), 0 0 60px -22px rgba(180,23,63,0.55);
+    transform:translateY(26px) scale(0.94);
+    transition:transform .55s cubic-bezier(.22,.9,.25,1);
+  }
+  .modal.open .modal-card{ transform:none; }
+  .modal-card h2{
+    margin:0; text-align:center;
+    font-family:'Fraunces',serif; font-style:italic; font-weight:600;
+    font-size:1.5rem; color:var(--bone); letter-spacing:0.01em;
+  }
+  .modal-rule{
+    height:1px; width:60%; margin:14px auto 16px; flex-shrink:0;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .modal-body{
+    overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+    white-space:pre-line; text-align:center;
+    font-family:'Manrope',sans-serif; font-weight:500;
+    font-size:0.92rem; line-height:1.75; color:var(--bone-dim);
+  }
+  .modal-close{
+    position:absolute; top:12px; right:12px;
+    width:32px; height:32px; padding:0;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%; cursor:pointer;
+    background:rgba(11,10,12,0.5); border:1px solid rgba(239,231,221,0.18);
+    color:var(--bone-dim);
+  }
+  .modal-close svg{ width:14px; height:14px; }
+  .modal-close:focus-visible, button.pill-btn:focus-visible, a.pill-btn:focus-visible{
+    outline:2px solid var(--gold); outline-offset:2px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .modal, .modal-card{ transition-duration:.01s; }
+  }
 
   #aboutOverlay{
     font-family:'Manrope',sans-serif; font-weight:500; color:var(--bone-dim);
@@ -299,6 +363,15 @@
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.29-.15-1.7-.84-1.96-.93-.26-.1-.46-.15-.65.15-.2.29-.75.93-.92 1.12-.17.2-.34.22-.63.08-.29-.15-1.22-.45-2.32-1.43-.86-.76-1.44-1.7-1.6-1.99-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.51.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.51-.08-.15-.65-1.57-.9-2.15-.24-.57-.48-.5-.65-.5-.17 0-.37-.02-.56-.02-.2 0-.51.07-.78.37-.26.29-1.02 1-1.02 2.43 0 1.43 1.05 2.82 1.19 3.01.15.2 2.06 3.14 5 4.4.7.3 1.24.48 1.67.62.7.22 1.34.19 1.84.12.56-.08 1.7-.7 1.94-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.2-.55-.34z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l4.99-1.36A10 10 0 1 0 12 2zm0 18.2a8.17 8.17 0 0 1-4.17-1.14l-.3-.18-3.1.85.83-3.03-.2-.31A8.2 8.2 0 1 1 12 20.2z"/></svg>
     <span>WhatsApp</span>
   </a>
+  <!-- RATE US: replace the href with your Google review link -->
+  <a id="rateOverlay" class="overlay-el pill-btn" href="https://g.page/r/YOUR_REVIEW_LINK/review" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.1 6.47L12 17.3l-5.8 3.1 1.1-6.47L2.6 9.35l6.5-.95L12 2.5z"/></svg>
+    <span>Rate Us</span>
+  </a>
+  <button id="productsOverlay" type="button" class="overlay-el pill-btn" aria-haspopup="dialog">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span>Products</span>
+  </button>
 
   <div id="chipsOverlay" class="overlay-el">
     <span class="chip live"><span class="dot"></span>Open Now</span>
@@ -308,6 +381,24 @@
 
   <div id="footerOverlay" class="overlay-el">
     <div class="addr">Thank you for visiting</div>
+  </div>
+
+  <div id="productsModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="productsTitle">
+      <button type="button" class="modal-close" data-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+      </button>
+      <h2 id="productsTitle">Our Products</h2>
+      <div class="modal-rule"></div>
+      <!-- EDIT YOUR PRODUCTS TEXT BELOW: one item per line, line breaks are kept -->
+      <div id="productsText" class="modal-body">Rice, Dal &amp; Atta
+Cooking Oil &amp; Spices
+Fresh Milk &amp; Dairy
+Snacks &amp; Beverages
+Household Essentials
+Personal Care</div>
+    </div>
   </div>
 
   <button id="skipBtn">Skip</button>
@@ -755,6 +846,84 @@
     }, center);
   }
 
+  /* ---- rate us: five stars -> pill ---- */
+  function starPath(c, cx, cy, R, r){
+    c.beginPath();
+    for(let i=0;i<10;i++){
+      const ang = -Math.PI/2 + i*Math.PI/5;
+      const rad = i%2===0 ? R : r;
+      const x = cx + Math.cos(ang)*rad, y = cy + Math.sin(ang)*rad;
+      if(i===0) c.moveTo(x,y); else c.lineTo(x,y);
+    }
+    c.closePath();
+  }
+  function drawStars(octx, w, h, center, count){
+    const {cx,cy} = center;
+    const R = 15, gap = 38;
+    const x0 = cx - gap*2;
+    for(let i=0;i<count;i++){
+      const g = octx.createLinearGradient(0, cy-R, 0, cy+R);
+      g.addColorStop(0,'#f0cf8a'); g.addColorStop(1,'#c9a15a');
+      octx.fillStyle = g;
+      starPath(octx, x0+i*gap, cy, R, R*0.45);
+      octx.fill();
+    }
+  }
+
+  /* ---- products: shopping bag -> pill ---- */
+  function drawBag(octx, w, h, center){
+    const {cx,cy} = center;
+    const bw = 54, bh = 50;
+    const x = cx-bw/2, y = cy-bh/2+8;
+    octx.strokeStyle = '#c9a15a'; octx.lineWidth = 3.5; octx.lineCap = 'round';
+    octx.beginPath(); octx.arc(cx, y+4, 14, Math.PI, 0); octx.stroke();
+    const g = octx.createLinearGradient(x,y,x,y+bh);
+    g.addColorStop(0,'#e0264f'); g.addColorStop(1,'#7a0f2a');
+    octx.fillStyle = g;
+    roundRectPath(octx, x, y, bw, bh, 9); octx.fill();
+    octx.strokeStyle = 'rgba(201,161,90,0.7)'; octx.lineWidth = 1.5;
+    roundRectPath(octx, x, y, bw, bh, 9); octx.stroke();
+    octx.fillStyle = '#c9a15a';
+    octx.beginPath(); octx.arc(cx-14, y+12, 2.8, 0, Math.PI*2); octx.fill();
+    octx.beginPath(); octx.arc(cx+14, y+12, 2.8, 0, Math.PI*2); octx.fill();
+  }
+
+  // final-size pill (used when a button is revealed straight into the row)
+  function drawSmallPill(octx, label, iconFn, rect){
+    const {x,y,w,h} = rect;
+    const grad = octx.createLinearGradient(x,y,x,y+h);
+    grad.addColorStop(0,'#e0264f'); grad.addColorStop(1,'#7a0f2a');
+    octx.fillStyle = grad;
+    roundRectPath(octx, x, y, w, h, h/2);
+    octx.fill();
+    octx.strokeStyle = 'rgba(201,161,90,0.55)'; octx.lineWidth = 1.2;
+    octx.stroke();
+    const cx = x+w/2, cy = y+h/2;
+    octx.font = '700 10px Manrope, sans-serif';
+    octx.letterSpacing = '1.4px';
+    const tw = octx.measureText(label).width;
+    const iconW = 11.4, gapPx = 5;
+    const sx = cx - (iconW+gapPx+tw)/2;
+    octx.save();
+    octx.translate(sx+iconW/2, cy);
+    octx.strokeStyle = '#efe7dd'; octx.fillStyle = '#efe7dd'; octx.lineWidth = 1.6;
+    octx.lineCap = 'round'; octx.lineJoin = 'round';
+    iconFn(octx);
+    octx.restore();
+    octx.fillStyle = '#efe7dd';
+    octx.textAlign = 'left'; octx.textBaseline = 'middle';
+    octx.fillText(label, sx+iconW+gapPx, cy+0.5);
+  }
+  function drawRateButton(octx, w, h){
+    drawSmallPill(octx, 'RATE US', c=>{ starPath(c,0,0,6,2.7); c.fill(); c.stroke(); }, FINAL.rate);
+  }
+  function drawProductsButton(octx, w, h){
+    drawSmallPill(octx, 'PRODUCTS', c=>{
+      c.beginPath(); c.moveTo(-5,-2); c.lineTo(-6,6); c.lineTo(6,6); c.lineTo(5,-2); c.closePath(); c.stroke();
+      c.beginPath(); c.arc(0,-2,3,Math.PI,0); c.stroke();
+    }, FINAL.products);
+  }
+
   function drawThankYou(octx, w, h){
     const {cx,cy} = L.footer();
     octx.fillStyle = '#efe7dd';
@@ -785,6 +954,8 @@
     call: document.getElementById('callOverlay'),
     location: document.getElementById('locationOverlay'),
     whatsapp: document.getElementById('whatsappOverlay'),
+    rate: document.getElementById('rateOverlay'),
+    products: document.getElementById('productsOverlay'),
     chips: document.getElementById('chipsOverlay'),
     footer: document.getElementById('footerOverlay')
   };
@@ -849,7 +1020,9 @@
   }
 
   /* =============== final assembled layout =============== */
-  function assembleFinalLayout(){
+  const FINAL = { rate:null, products:null };
+  function assembleFinalLayout(showChips){
+    if(showChips === undefined) showChips = true;
     const cx = W/2;
 
     // logo + name settle near the top
@@ -883,12 +1056,21 @@
       });
     });
 
+    // second row: Rate Us + Products, together as wide as the row above
+    const btnW2 = (totalW - gap)/2;
+    const row2Top = btnTop + btnH + gap;
+    FINAL.rate = { x:startX, y:row2Top, w:btnW2, h:btnH };
+    FINAL.products = { x:startX + btnW2 + gap, y:row2Top, w:btnW2, h:btnH };
+    [[ov.rate, FINAL.rate],[ov.products, FINAL.products]].forEach(([el,r])=>{
+      Object.assign(el.style,{ left:r.x+'px', top:r.y+'px', width:r.w+'px', height:r.h+'px', fontSize:'0.62rem' });
+    });
+
     // the space below the buttons and above the footer is put to work
     // with quick-trust signals instead of sitting empty
-    const chipsTop = btnTop + btnH + 34;
+    const chipsTop = row2Top + btnH + 28;
     const chipsW = Math.min(W*0.86, 380);
     Object.assign(ov.chips.style,{ left:(cx-chipsW/2)+'px', top:chipsTop+'px', width:chipsW+'px', height:'34px' });
-    ov.chips.classList.add('visible');
+    if(showChips) ov.chips.classList.add('visible');
 
     placeFooterStage();
   }
@@ -896,8 +1078,30 @@
   /* =============== main sequence =============== */
   let skipped = false;
   document.getElementById('skipBtn').addEventListener('click', ()=>{ Sound.unlock(); skipped = true; });
-  [ov.call, ov.location, ov.whatsapp].forEach(el=>{
+  [ov.call, ov.location, ov.whatsapp, ov.rate, ov.products].forEach(el=>{
     el.addEventListener('pointerdown', ()=>Sound.tick(), { passive:true });
+  });
+
+  /* ---------- products popup ---------- */
+  const productsModal = document.getElementById('productsModal');
+  const productsText = document.getElementById('productsText');
+  productsText.textContent = productsText.textContent.trim();
+  function openProducts(){
+    Sound.unlock();
+    Sound.chime([523.25, 659.25], 0.4, 0.08);
+    productsModal.classList.add('open');
+    productsModal.setAttribute('aria-hidden','false');
+    productsModal.querySelector('.modal-close').focus({ preventScroll:true });
+  }
+  function closeProducts(){
+    productsModal.classList.remove('open');
+    productsModal.setAttribute('aria-hidden','true');
+    ov.products.focus({ preventScroll:true });
+  }
+  ov.products.addEventListener('click', openProducts);
+  productsModal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click', closeProducts));
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape' && productsModal.classList.contains('open')) closeProducts();
   });
 
   async function runSequence(){
@@ -984,8 +1188,48 @@
     // ---- Assemble final bio page ----
     pulseGlow(W/2, H*0.42);
     Sound.chime([392, 493.88, 587.33, 783.99], 0.6, 0.11);
-    assembleFinalLayout();
+    assembleFinalLayout(false);
     await delay(1150);
+    if(skipped){ finishInstantly(); return; }
+
+    // ---- Rate Us: five stars appear one by one, then melt into the button ----
+    const rc = { cx:W/2, cy:FINAL.rate.y + FINAL.rate.h/2 };
+    pulseGlow(rc.cx, rc.cy);
+    Sound.whoosh(0.8);
+    const starNotes = [523.25, 587.33, 659.25, 783.99, 880];
+    for(let k=1; k<=5; k++){
+      ctx.clearRect(0,0,W,H);
+      drawStars(ctx, W, H, rc, k);
+      Sound.chime([starNotes[k-1]], 0.5, 0);
+      await delay(190);
+    }
+    await delay(350);
+    const starPts = sampleFromRender((c,w,h)=>drawStars(c,w,h,rc,5), 2, 60);
+    const ratePts = sampleFromRender(drawRateButton, 2, 60);
+    Sound.whoosh(1.0);
+    await morph(starPts, ratePts, 1100, 1800);
+    swapInCrisp(ov.rate, ()=>{});
+    Sound.chime([523.25, 659.25, 783.99], 0.45);
+    await delay(450);
+    if(skipped){ finishInstantly(); return; }
+
+    // ---- Products: shopping bag -> button ----
+    const pc = { cx:FINAL.products.x + FINAL.products.w/2, cy:FINAL.products.y + FINAL.products.h/2 };
+    pulseGlow(pc.cx, pc.cy);
+    Sound.whoosh(0.8);
+    ctx.clearRect(0,0,W,H);
+    drawBag(ctx, W, H, pc);
+    const bagPts = sampleFromRender((c,w,h)=>drawBag(c,w,h,pc), 2, 60);
+    await delay(450);
+    const prodPts = sampleFromRender(drawProductsButton, 2, 60);
+    Sound.whoosh(1.0);
+    await morph(bagPts, prodPts, 1000, 1800);
+    swapInCrisp(ov.products, ()=>{});
+    Sound.chime([523.25, 659.25, 783.99], 0.45);
+    await delay(450);
+    ov.chips.classList.add('visible');
+    await delay(500);
+    if(skipped){ finishInstantly(); return; }
 
     // ---- Footer: thank you -> address ----
     Sound.whoosh(1.2);
@@ -1014,6 +1258,8 @@
     placePillStage(ov.location); ov.location.classList.add('visible');
     placePillStage(ov.whatsapp); ov.whatsapp.classList.add('visible');
     assembleFinalLayout();
+    ov.rate.classList.add('visible');
+    ov.products.classList.add('visible');
     ov.about.classList.add('visible');
     ov.chips.classList.add('visible');
     ov.footer.querySelector('.addr').innerHTML = '123, Green Street<br>Near City Park<br>Bangalore, Karnataka 560001';
