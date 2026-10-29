@@ -111,12 +111,12 @@
     position:fixed;
     opacity:0;
     pointer-events:none;
-    transition: top 1.05s cubic-bezier(.22,.9,.25,1),
-                left 1.05s cubic-bezier(.22,.9,.25,1),
-                width 1.05s cubic-bezier(.22,.9,.25,1),
-                height 1.05s cubic-bezier(.22,.9,.25,1),
-                transform 1.05s cubic-bezier(.22,.9,.25,1),
-                font-size 1.05s cubic-bezier(.22,.9,.25,1),
+    transition: top .5s cubic-bezier(.22,.9,.25,1),
+                left .5s cubic-bezier(.22,.9,.25,1),
+                width .5s cubic-bezier(.22,.9,.25,1),
+                height .5s cubic-bezier(.22,.9,.25,1),
+                transform .5s cubic-bezier(.22,.9,.25,1),
+                font-size .5s cubic-bezier(.22,.9,.25,1),
                 opacity .5s ease;
     transform-origin:center center;
     text-align:center;
@@ -260,7 +260,7 @@
     background:linear-gradient(90deg, transparent, var(--gold), transparent);
     transform:scaleX(0);
     transform-origin:center;
-    transition:transform 0.7s cubic-bezier(.22,.9,.25,1);
+    transition:transform 0.35s cubic-bezier(.22,.9,.25,1);
   }
   #ownerOverlay.lit .owner-line{ transform:scaleX(1); }
 
@@ -437,7 +437,9 @@ Personal Care</div>
   resize();
   window.addEventListener('resize', resize);
 
-  const delay = ms => new Promise(r=>setTimeout(r, ms));
+  // intro speed multiplier: 1 = original pace, 2 = twice as fast
+  const SPEED = 2.2;
+  const delay = ms => new Promise(r=>setTimeout(r, ms/SPEED));
   const easeInOutCubic = t => t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
 
   /* ---------- persistent ambient dust (continuous background effect) ---------- */
@@ -630,6 +632,7 @@ Personal Care</div>
   }
 
   function morph(sourcePts, destPts, duration, budget){
+    duration = duration/SPEED;
     return new Promise(resolve=>{
       const n = budget || Math.min(2200, Math.max(sourcePts.length, destPts.length, 200));
       const S = resample(sourcePts, n);
@@ -986,11 +989,11 @@ Personal Care</div>
     [...OWNER_NAME].forEach(ch=>{
       const span = document.createElement('span');
       span.textContent = ch === ' ' ? '\u00A0' : ch;
-      span.style.transition = 'opacity .55s cubic-bezier(.22,.9,.25,1), transform .55s cubic-bezier(.22,.9,.25,1), filter .55s ease';
+      span.style.transition = 'opacity .3s cubic-bezier(.22,.9,.25,1), transform .3s cubic-bezier(.22,.9,.25,1), filter .3s ease';
       el.appendChild(span);
     });
     const letters = el.querySelectorAll('span');
-    letters.forEach((s,i)=>{ s.style.transitionDelay = (i*45)+'ms'; });
+    letters.forEach((s,i)=>{ s.style.transitionDelay = (i*45/SPEED)+'ms'; });
     requestAnimationFrame(()=>{
       requestAnimationFrame(()=>{
         letters.forEach(s=>{
@@ -998,7 +1001,7 @@ Personal Care</div>
           s.style.transform = 'translateY(0) scale(1)';
           s.style.filter = 'blur(0)';
         });
-        setTimeout(()=>ov.owner.classList.add('lit'), letters.length*45 + 120);
+        setTimeout(()=>ov.owner.classList.add('lit'), (letters.length*45 + 120)/SPEED);
       });
     });
   }
