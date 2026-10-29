@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Crimson Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --charcoal:#0b0a0c;
+    --charcoal-2:#121014;
+    --crimson:#b4173f;
+    --crimson-2:#e0264f;
+    --gold:#c9a15a;
+    --bone:#efe7dd;
+    --bone-dim:rgba(239,231,221,0.62);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0; padding:0; width:100%; height:100%;
+    background:var(--charcoal);
+    overflow:hidden;
+    overscroll-behavior:none;
+    font-family:'Manrope',sans-serif;
+    color:var(--bone);
+  }
+  #stageRoot{
+    position:fixed; inset:0; width:100vw; height:100vh;
+    height:100dvh;
+    overflow:hidden;
+  }
+
+  /* ---------- ambient background ---------- */
+  #bgGlow{
+    position:absolute; inset:-20%;
+    background:
+      radial-gradient(ellipse 55% 40% at 50% 18%, rgba(180,23,63,0.30), transparent 60%),
+      radial-gradient(ellipse 60% 45% at 20% 85%, rgba(201,161,90,0.10), transparent 65%),
+      radial-gradient(ellipse 70% 60% at 80% 75%, rgba(180,23,63,0.14), transparent 65%);
+    filter:blur(10px);
+    transition:transform 1.1s cubic-bezier(.22,.9,.3,1), opacity 1.1s ease;
+    transform:scale(1);
+    opacity:0.9;
+    pointer-events:none;
+  }
+  #bgGlow.pulse{ transform:scale(1.06); opacity:1; }
+  #grain{
+    position:absolute; inset:0; pointer-events:none; opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  .sweep{
+    position:absolute; top:0; left:-30%; width:26%; height:100%;
+    background:linear-gradient(100deg, transparent, rgba(201,161,90,0.10), transparent);
+    transform:skewX(-14deg);
+    pointer-events:none;
+    animation:sweepMove 5.5s ease-in-out infinite;
+  }
+  @keyframes sweepMove{
+    0%{ left:-30%; }
+    45%{ left:120%; }
+    100%{ left:120%; }
+  }
+
+  canvas#ambient{
+    position:absolute; inset:0; width:100%; height:100%;
+    display:block;
+    opacity:0.8;
+  }
+  canvas#stage{
+    position:absolute; inset:0; width:100%; height:100%;
+    display:block;
+  }
+
+  /* ---------- ripple burst on each reveal ---------- */
+  #ripple{
+    position:fixed; width:14px; height:14px; margin:-7px 0 0 -7px;
+    border-radius:50%;
+    border:1.5px solid rgba(201,161,90,0.6);
+    box-shadow:0 0 50px 14px rgba(180,23,63,0.28), inset 0 0 20px rgba(224,38,79,0.25);
+    pointer-events:none;
+    opacity:0;
+    transform:scale(0.3);
+    z-index:3;
+  }
+  #ripple.active{ animation:rippleGo 1000ms cubic-bezier(.19,.86,.28,1); }
+  #ripple2{
+    position:fixed; width:14px; height:14px; margin:-7px 0 0 -7px;
+    border-radius:50%;
+    border:1px solid rgba(180,23,63,0.45);
+    pointer-events:none;
+    opacity:0;
+    transform:scale(0.3);
+    z-index:3;
+  }
+  #ripple2.active{ animation:rippleGo2 1250ms cubic-bezier(.19,.86,.28,1); }
+  @keyframes rippleGo{
+    0%{ opacity:0.85; transform:scale(0.3); }
+    60%{ opacity:0.32; }
+    100%{ opacity:0; transform:scale(18); }
+  }
+  @keyframes rippleGo2{
+    0%{ opacity:0.6; transform:scale(0.3); }
+    70%{ opacity:0.18; }
+    100%{ opacity:0; transform:scale(26); }
+  }
+
+  /* ---------- overlay DOM elements (crisp final renders) ---------- */
+  .overlay-el{
+    position:fixed;
+    opacity:0;
+    pointer-events:none;
+    transition: top 1.05s cubic-bezier(.22,.9,.25,1),
+                left 1.05s cubic-bezier(.22,.9,.25,1),
+                width 1.05s cubic-bezier(.22,.9,.25,1),
+                height 1.05s cubic-bezier(.22,.9,.25,1),
+                transform 1.05s cubic-bezier(.22,.9,.25,1),
+                font-size 1.05s cubic-bezier(.22,.9,.25,1),
+                opacity .5s ease;
+    transform-origin:center center;
+    text-align:center;
+  }
+  .overlay-el.visible{ opacity:1; pointer-events:auto; }
+
+  #logoOverlay{
+    border-radius:22%;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(224,38,79,0.9), rgba(180,23,63,0.95) 55%, rgba(11,10,12,0.98) 100%);
+    box-shadow:0 0 0 1px rgba(201,161,90,0.35), 0 18px 40px -12px rgba(180,23,63,0.55);
+    display:flex; align-items:center; justify-content:center;
+  }
+  #logoOverlay span{
+    font-family:'Fraunces',serif; font-weight:600; color:var(--gold);
+    letter-spacing:0.02em;
+  }
+
+  #nameOverlay{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    white-space:nowrap;
+  }
+  #nameOverlay h1{
+    margin:0; font-family:'Fraunces',serif; font-weight:600; font-style:italic;
+    color:var(--bone); letter-spacing:0.01em;
+    font-size:inherit;
+    line-height:1;
+  }
+  #nameOverlay p{
+    margin:.5em 0 0; font-family:'Manrope',sans-serif; font-weight:500;
+    letter-spacing:0.32em; text-transform:uppercase;
+    color:var(--gold); font-size:0.28em;
+  }
+
+  .pill-btn{
+    border-radius:999px;
+    display:flex; align-items:center; justify-content:center; gap:0.5em;
+    font-family:'Manrope',sans-serif; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--bone); text-decoration:none;
+    background:linear-gradient(160deg, rgba(224,38,79,0.95), rgba(122,15,42,0.96));
+    box-shadow:0 0 0 1px rgba(201,161,90,0.4), 0 14px 30px -10px rgba(180,23,63,0.6);
+    font-size:0.95rem;
+  }
+  .pill-btn svg{ width:1.15em; height:1.15em; flex-shrink:0; }
+
+  #aboutOverlay{
+    font-family:'Manrope',sans-serif; font-weight:500; color:var(--bone-dim);
+    line-height:1.55; letter-spacing:0.01em;
+  }
+
+  /* ---------- owner name: distinct letter-cascade + underline sweep reveal ---------- */
+  #ownerOverlay{
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    white-space:nowrap;
+  }
+  #ownerOverlay .owner-row{
+    display:flex; align-items:baseline; gap:0.5em;
+  }
+  #ownerOverlay .owner-label{
+    font-family:'Manrope',sans-serif; font-weight:600; letter-spacing:0.22em;
+    text-transform:uppercase; color:var(--bone-dim); font-size:0.62em;
+  }
+  #ownerOverlay .owner-name{
+    font-family:'Fraunces',serif; font-weight:600; font-style:italic;
+    color:var(--gold); font-size:1em; letter-spacing:0.01em;
+  }
+  #ownerOverlay .owner-name span{
+    display:inline-block;
+    opacity:0;
+    transform:translateY(60%) scale(0.7);
+    filter:blur(3px);
+  }
+  #ownerOverlay .owner-line{
+    margin-top:0.32em;
+    width:100%;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    transform:scaleX(0);
+    transform-origin:center;
+    transition:transform 0.7s cubic-bezier(.22,.9,.25,1);
+  }
+  #ownerOverlay.lit .owner-line{ transform:scaleX(1); }
+
+  #footerOverlay{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    white-space:pre-line;
+  }
+  #footerOverlay .addr{
+    font-family:'Manrope',sans-serif; font-weight:600; color:var(--bone);
+    line-height:1.5; letter-spacing:0.02em; font-size:1em;
+  }
+
+  #chipsOverlay{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
+    gap:9px;
+  }
+  #chipsOverlay .chip{
+    display:flex; align-items:center; gap:6px;
+    padding:7px 13px;
+    border-radius:999px;
+    background:rgba(239,231,221,0.05);
+    border:1px solid rgba(201,161,90,0.28);
+    backdrop-filter:blur(4px);
+    font-family:'Manrope',sans-serif; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--bone-dim);
+    font-size:0.62rem;
+    white-space:nowrap;
+  }
+  #chipsOverlay .chip.live{ color:var(--bone); border-color:rgba(201,161,90,0.5); }
+  #chipsOverlay .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:#3ee27a;
+    box-shadow:0 0 8px 2px rgba(62,226,122,0.7);
+    animation:dotBeat 1.8s ease-in-out infinite;
+  }
+  @keyframes dotBeat{
+    0%,100%{ opacity:1; transform:scale(1); }
+    50%{ opacity:0.55; transform:scale(0.75); }
+  }
+
+  /* skip intro */
+  #skipBtn{
+    position:fixed; top:calc(env(safe-area-inset-top,0px) + 18px); right:18px;
+    z-index:50; background:rgba(11,10,12,0.5); border:1px solid rgba(239,231,221,0.18);
+    color:var(--bone-dim); font-family:'Manrope',sans-serif; font-size:11px; letter-spacing:0.18em;
+    text-transform:uppercase; padding:8px 14px; border-radius:999px; backdrop-filter:blur(6px);
+    cursor:pointer; transition:opacity .4s ease;
+  }
+  #skipBtn.hidden{ opacity:0; pointer-events:none; }
+
+  #muteBtn{
+    position:fixed; top:calc(env(safe-area-inset-top,0px) + 18px); left:18px;
+    z-index:50; width:34px; height:34px;
+    background:rgba(11,10,12,0.5); border:1px solid rgba(239,231,221,0.18);
+    border-radius:50%; backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:var(--bone-dim);
+    transition:opacity .4s ease, border-color .3s ease;
+  }
+  #muteBtn svg{ width:16px; height:16px; }
+  #muteBtn .off{ display:none; }
+  #muteBtn.muted .on{ display:none; }
+  #muteBtn.muted .off{ display:block; }
+</style>
+</head>
+<body>
+
+<div id="stageRoot">
+  <div id="bgGlow"></div>
+  <div class="sweep"></div>
+  <canvas id="ambient"></canvas>
+  <div id="grain"></div>
+  <canvas id="stage"></canvas>
+  <div id="ripple"></div>
+  <div id="ripple2"></div>
+
+  <div id="logoOverlay" class="overlay-el"><span>CH</span></div>
+  <div id="nameOverlay" class="overlay-el">
+    <h1>Crimson Hub</h1>
+    <p>Quality · Trust · Local</p>
+  </div>
+  <div id="ownerOverlay" class="overlay-el">
+    <div class="owner-row">
+      <span class="owner-label">Owner</span>
+      <span class="owner-name" id="ownerNameText"></span>
+    </div>
+    <div class="owner-line"></div>
+  </div>
+  <div id="aboutOverlay" class="overlay-el">Your neighbourhood store for everyday essentials — trusted by the block since day one.</div>
+
+  <a id="callOverlay" class="overlay-el pill-btn" href="tel:+919876543210">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    <span>Call</span>
+  </a>
+  <a id="locationOverlay" class="overlay-el pill-btn" href="https://www.google.com/maps/search/?api=1&query=123+Green+Street+Near+City+Park+Bangalore+Karnataka+560001" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span>Location</span>
+  </a>
+  <a id="whatsappOverlay" class="overlay-el pill-btn" href="https://wa.me/919876543210" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.29-.15-1.7-.84-1.96-.93-.26-.1-.46-.15-.65.15-.2.29-.75.93-.92 1.12-.17.2-.34.22-.63.08-.29-.15-1.22-.45-2.32-1.43-.86-.76-1.44-1.7-1.6-1.99-.17-.29-.02-.44.13-.59.13-.13.29-.34.44-.51.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.51-.08-.15-.65-1.57-.9-2.15-.24-.57-.48-.5-.65-.5-.17 0-.37-.02-.56-.02-.2 0-.51.07-.78.37-.26.29-1.02 1-1.02 2.43 0 1.43 1.05 2.82 1.19 3.01.15.2 2.06 3.14 5 4.4.7.3 1.24.48 1.67.62.7.22 1.34.19 1.84.12.56-.08 1.7-.7 1.94-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.2-.55-.34z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l4.99-1.36A10 10 0 1 0 12 2zm0 18.2a8.17 8.17 0 0 1-4.17-1.14l-.3-.18-3.1.85.83-3.03-.2-.31A8.2 8.2 0 1 1 12 20.2z"/></svg>
+    <span>WhatsApp</span>
+  </a>
+
+  <div id="chipsOverlay" class="overlay-el">
+    <span class="chip live"><span class="dot"></span>Open Now</span>
+    <span class="chip">UPI Accepted</span>
+    <span class="chip">Home Delivery</span>
+  </div>
+
+  <div id="footerOverlay" class="overlay-el">
+    <div class="addr">Thank you for visiting</div>
+  </div>
+
+  <button id="skipBtn">Skip</button>
+  <button id="muteBtn" aria-label="Toggle sound">
+    <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a9 9 0 0 1 0 12"/></svg>
+    <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+  </button>
+</div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('stage');
+  const ctx = canvas.getContext('2d');
+  const ambientCanvas = document.getElementById('ambient');
+  const actx = ambientCanvas.getContext('2d');
+  const bgGlow = document.getElementById('bgGlow');
+  const rippleEl = document.getElementById('ripple');
+  const ripple2El = document.getElementById('ripple2');
+  let DPR = Math.min(window.devicePixelRatio||1, 2.5);
+  let W, H;
+
+  function resize(){
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.floor(W*DPR);
+    canvas.height = Math.floor(H*DPR);
+    canvas.style.width = W+'px';
+    canvas.style.height = H+'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    ambientCanvas.width = Math.floor(W*DPR);
+    ambientCanvas.height = Math.floor(H*DPR);
+    ambientCanvas.style.width = W+'px';
+    ambientCanvas.style.height = H+'px';
+    actx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const delay = ms => new Promise(r=>setTimeout(r, ms));
+  const easeInOutCubic = t => t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+
+  /* ---------- persistent ambient dust (continuous background effect) ---------- */
+  const dust = Array.from({length:34}, ()=>({
+    x: Math.random(), y: Math.random(),
+    r: 0.6 + Math.random()*1.8,
+    speed: 0.00006 + Math.random()*0.00012,
+    phase: Math.random()*Math.PI*2,
+    drift: (Math.random()-0.5)*0.00008,
+    gold: Math.random() > 0.55
+  }));
+  function ambientLoop(now){
+    actx.clearRect(0,0,W,H);
+    for(const p of dust){
+      const yy = ((p.y + now*p.speed) % 1.15) - 0.075;
+      const xx = p.x + Math.sin(now*0.00015 + p.phase)*0.02;
+      const alpha = 0.16 + 0.14*Math.sin(now*0.001 + p.phase);
+      const [r,g,b] = p.gold ? [201,161,90] : [180,23,63];
+      actx.fillStyle = `rgba(${r},${g},${b},${Math.max(0,alpha)})`;
+      actx.beginPath();
+      actx.arc(xx*W, yy*H, p.r, 0, Math.PI*2);
+      actx.fill();
+    }
+    requestAnimationFrame(ambientLoop);
+  }
+  requestAnimationFrame(ambientLoop);
+
+  /* =============== sound engine (fully synthesized, no audio files) =============== */
+  const Sound = (function(){
+    let actx2 = null, master = null, droneGain = null, unlocked = false, muted = false;
+    const muteBtn = document.getElementById('muteBtn');
+
+    function ensureCtx(){
+      if(actx2) return actx2;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return null;
+      actx2 = new AC();
+      master = actx2.createGain();
+      master.gain.value = muted ? 0 : 0.32;
+      master.connect(actx2.destination);
+      return actx2;
+    }
+
+    function startDrone(){
+      if(!actx2 || droneGain) return;
+      droneGain = actx2.createGain();
+      droneGain.gain.value = 0;
+      droneGain.connect(master);
+      [55, 82.5].forEach((f,i)=>{
+        const osc = actx2.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = f;
+        const g = actx2.createGain();
+        g.gain.value = i===0 ? 0.5 : 0.28;
+        osc.connect(g).connect(droneGain);
+        osc.start();
+      });
+      const now = actx2.currentTime;
+      droneGain.gain.linearRampToValueAtTime(0.028, now+3);
+    }
+
+    function unlock(){
+      if(unlocked) return;
+      unlocked = true;
+      const c = ensureCtx();
+      if(!c) return;
+      if(c.state === 'suspended') c.resume();
+      startDrone();
+    }
+    document.addEventListener('pointerdown', unlock, { once:true, passive:true });
+
+    function tone(freq, t0, dur, type, peak){
+      if(!actx2 || muted) return;
+      const osc = actx2.createOscillator();
+      osc.type = type || 'sine';
+      osc.frequency.value = freq;
+      const filt = actx2.createBiquadFilter();
+      filt.type = 'lowpass';
+      filt.frequency.value = 2400;
+      const g = actx2.createGain();
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.linearRampToValueAtTime(peak===undefined?0.16:peak, t0+0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+      osc.connect(filt).connect(g).connect(master);
+      osc.start(t0); osc.stop(t0+dur+0.05);
+    }
+
+    function whoosh(durationSec){
+      if(!actx2 || muted) return;
+      const c = actx2;
+      const len = Math.max(0.05, durationSec);
+      const bufSize = Math.floor(c.sampleRate*len);
+      const buffer = c.createBuffer(1, bufSize, c.sampleRate);
+      const data = buffer.getChannelData(0);
+      for(let i=0;i<bufSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufSize); }
+      const src = c.createBufferSource();
+      src.buffer = buffer;
+      // gentle low-pass "air" sweep instead of a hissy bandpass burst —
+      // most of the noise energy is filtered away, leaving a soft breath
+      const filter = c.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.Q.value = 0.3;
+      const t0 = c.currentTime;
+      filter.frequency.setValueAtTime(900, t0);
+      filter.frequency.exponentialRampToValueAtTime(140, t0+len);
+      const g = c.createGain();
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.linearRampToValueAtTime(0.1, t0+len*0.25);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+len);
+      src.connect(filter).connect(g).connect(master);
+      src.start(t0); src.stop(t0+len+0.05);
+    }
+
+    function chime(freqs, dur, gap){
+      if(!actx2 || muted) return;
+      const t0 = actx2.currentTime;
+      freqs.forEach((f,i)=>tone(f, t0+i*(gap||0.1), dur||0.55, 'sine', 0.14));
+    }
+
+    function tick(){
+      if(!actx2 || muted) return;
+      tone(1200, actx2.currentTime, 0.05, 'sine', 0.035);
+    }
+
+    function toggleMute(){
+      muted = !muted;
+      unlock();
+      if(master) master.gain.setTargetAtTime(muted?0:0.32, actx2.currentTime, 0.05);
+      muteBtn.classList.toggle('muted', muted);
+    }
+    muteBtn.addEventListener('click', toggleMute);
+
+    return { whoosh, chime, tick, unlock };
+  })();
+
+  /* ---------- reveal effects: glow pulse + expanding ripple burst ---------- */
+  function pulseGlow(px, py){
+    bgGlow.classList.add('pulse');
+    setTimeout(()=>bgGlow.classList.remove('pulse'), 900);
+    const x = px===undefined ? W/2 : px;
+    const y = py===undefined ? H/2 : py;
+    [rippleEl, ripple2El].forEach(el=>{
+      el.style.left = x+'px';
+      el.style.top = y+'px';
+      el.classList.remove('active');
+      void el.offsetWidth;
+      el.classList.add('active');
+    });
+  }
+
+  /* =============== particle sampling engine =============== */
+  function sampleFromRender(drawFn, step, alphaThresh){
+    step = step || 5; alphaThresh = alphaThresh===undefined ? 70 : alphaThresh;
+    const off = document.createElement('canvas');
+    off.width = Math.floor(W*DPR); off.height = Math.floor(H*DPR);
+    const octx = off.getContext('2d');
+    octx.setTransform(DPR,0,0,DPR,0,0);
+    drawFn(octx, W, H);
+    let data;
+    try{ data = octx.getImageData(0,0,off.width,off.height).data; }
+    catch(e){ return []; }
+    const pts = [];
+    const stepPx = Math.round(step*DPR);
+    for(let y=0; y<off.height; y+=stepPx){
+      for(let x=0; x<off.width; x+=stepPx){
+        const idx = (y*off.width + x)*4;
+        const a = data[idx+3];
+        if(a > alphaThresh){
+          pts.push({
+            x: x/DPR, y: y/DPR,
+            r: step*0.62,
+            a: Math.min(1, a/255),
+            color: [data[idx], data[idx+1], data[idx+2]]
+          });
+        }
+      }
+    }
+    return pts;
+  }
+
+  function resample(pts, n){
+    if(pts.length===0){
+      const out=[];
+      for(let i=0;i<n;i++) out.push({x:W/2,y:H/2,r:0,a:0,color:[0,0,0]});
+      return out;
+    }
+    const out=[];
+    for(let i=0;i<n;i++) out.push(pts[(Math.random()*pts.length)|0]);
+    return out;
+  }
+
+  function morph(sourcePts, destPts, duration, budget){
+    return new Promise(resolve=>{
+      const n = budget || Math.min(2200, Math.max(sourcePts.length, destPts.length, 200));
+      const S = resample(sourcePts, n);
+      const D = resample(destPts, n);
+      const staggerSpan = 0.22;
+      const seeds = new Float32Array(n);
+      for(let i=0;i<n;i++) seeds[i] = (i % 37)/37;
+      const start = performance.now();
+      function frame(now){
+        const raw = Math.min(1, (now-start)/duration);
+        ctx.clearRect(0,0,W,H);
+        for(let i=0;i<n;i++){
+          const dl = seeds[i]*staggerSpan;
+          let t = (raw - dl) / (1-dl);
+          if(t<0) t=0; if(t>1) t=1;
+          const e = easeInOutCubic(t);
+          const s=S[i], d=D[i];
+          const x = s.x + (d.x-s.x)*e;
+          const y = s.y + (d.y-s.y)*e;
+          const r = Math.max(0.35, s.r + (d.r-s.r)*e);
+          const alpha = s.a + (d.a-s.a)*e;
+          const cr = Math.round(s.color[0] + (d.color[0]-s.color[0])*e);
+          const cg = Math.round(s.color[1] + (d.color[1]-s.color[1])*e);
+          const cb = Math.round(s.color[2] + (d.color[2]-s.color[2])*e);
+          ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha})`;
+          ctx.beginPath();
+          ctx.arc(x,y,r,0,Math.PI*2);
+          ctx.fill();
+        }
+        if(raw<1){ requestAnimationFrame(frame); }
+        else { resolve(); }
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  function clearStage(){ ctx.clearRect(0,0,W,H); }
+
+  /* =============== layout targets (shared by canvas + DOM) =============== */
+  const SLOT_GAP = 78;
+  const L = {
+    logo:   ()=>({ cx:W/2, cy:H*0.30, size:Math.min(W,H)*0.24 }),
+    center: ()=>({ cx:W/2, cy:H*0.5 }),
+    // bottom edge of the settled owner-name block (logo -> name -> owner
+    // stack), used so the contact-control slots always clear it
+    ownerBottom: ()=>{
+      const {cy,size} = L.logo();
+      return cy + size/2 + 26 + 78 + 40;
+    },
+    // each contact control gets its own independent reveal spot, stacked
+    // top-to-bottom (call, then location, then whatsapp), pushed down just
+    // far enough that Call's own top edge clears the owner name — not just
+    // the middle slot — so nothing collapses into it
+    slot: (i)=>{
+      const pillHalf = 32, margin = 28;
+      const minBase = L.ownerBottom() + pillHalf + margin + SLOT_GAP;
+      const base = Math.min(Math.max(H*0.58, minBase), H*0.80);
+      return { cx:W/2, cy: base + (i-1)*SLOT_GAP };
+    },
+    footer: ()=>({ cx:W/2, cy:H*0.90 })
+  };
+
+  /* =============== draw functions =============== */
+  function roundRectPath(c,x,y,w,h,r){
+    c.beginPath();
+    c.moveTo(x+r,y);
+    c.arcTo(x+w,y,x+w,y+h,r);
+    c.arcTo(x+w,y+h,x,y+h,r);
+    c.arcTo(x,y+h,x,y,r);
+    c.arcTo(x,y,x+w,y,r);
+    c.closePath();
+  }
+
+  function drawLogo(octx, w, h){
+    const {cx,cy,size} = L.logo();
+    const r = size*0.22;
+    const grad = octx.createRadialGradient(cx-size*0.2,cy-size*0.25,4, cx,cy,size*0.75);
+    grad.addColorStop(0,'#e0264f');
+    grad.addColorStop(0.55,'#b4173f');
+    grad.addColorStop(1,'#0b0a0c');
+    octx.fillStyle = grad;
+    roundRectPath(octx, cx-size/2, cy-size/2, size, size, r);
+    octx.fill();
+    octx.fillStyle = '#c9a15a';
+    octx.font = `600 ${size*0.4}px Fraunces, serif`;
+    octx.textAlign = 'center';
+    octx.textBaseline = 'middle';
+    octx.fillText('CH', cx, cy+size*0.02);
+  }
+
+  function drawPhoneText(octx, w, h, center){
+    const {cx,cy} = center || L.center();
+    octx.fillStyle = '#efe7dd';
+    octx.font = `500 ${Math.min(w*0.088,40)}px Fraunces, serif`;
+    octx.textAlign = 'center';
+    octx.textBaseline = 'middle';
+    octx.fillText('+91 98765 43210', cx, cy);
+  }
+
+  function drawPillButton(octx, w, h, label, iconPathFn, center){
+    const {cx,cy} = center || L.center();
+    const pw = Math.min(w*0.5, 230), ph = 64;
+    const x = cx-pw/2, y = cy-ph/2;
+    const grad = octx.createLinearGradient(x,y,x,y+ph);
+    grad.addColorStop(0,'#e0264f');
+    grad.addColorStop(1,'#7a0f2a');
+    octx.fillStyle = grad;
+    roundRectPath(octx, x, y, pw, ph, ph/2);
+    octx.fill();
+    octx.strokeStyle = 'rgba(201,161,90,0.55)';
+    octx.lineWidth = 1.5;
+    octx.stroke();
+    if(iconPathFn){
+      octx.save();
+      octx.translate(cx - pw*0.22, cy);
+      octx.strokeStyle = '#efe7dd';
+      octx.fillStyle = '#efe7dd';
+      octx.lineWidth = 2;
+      iconPathFn(octx);
+      octx.restore();
+    }
+    octx.fillStyle = '#efe7dd';
+    octx.font = `700 15px Manrope, sans-serif`;
+    octx.textAlign = 'center';
+    octx.textBaseline = 'middle';
+    octx.save();
+    octx.translate(pw*0.09,0);
+    octx.letterSpacing = '2px';
+    octx.fillText(label, cx, cy+1);
+    octx.restore();
+  }
+
+  function drawCallButton(octx,w,h,center){
+    drawPillButton(octx,w,h,'CALL',(c)=>{
+      c.beginPath();
+      c.arc(0,0,9,0,Math.PI*2);
+      c.moveTo(-3,-4); c.lineTo(3,4);
+      c.stroke();
+      c.beginPath(); c.arc(0,0,3,0,Math.PI*2); c.fill();
+    }, center);
+  }
+
+  function drawMap(octx, w, h, center){
+    const {cx,cy} = center || L.center();
+    const mw = Math.min(w*0.82, 340), mh = 220;
+    const x = cx-mw/2, y = cy-mh/2;
+    roundRectPath(octx, x,y,mw,mh, 20);
+    octx.save(); octx.clip();
+    const g = octx.createLinearGradient(x,y,x,y+mh);
+    g.addColorStop(0,'#1c1a20'); g.addColorStop(1,'#100e12');
+    octx.fillStyle = g; octx.fillRect(x,y,mw,mh);
+    octx.strokeStyle = 'rgba(201,161,90,0.35)';
+    octx.lineWidth = 2;
+    for(let i=1;i<5;i++){
+      octx.beginPath(); octx.moveTo(x, y+mh*i/5); octx.lineTo(x+mw, y+mh*i/5+((i%2)?14:-10)); octx.stroke();
+    }
+    for(let i=1;i<4;i++){
+      octx.beginPath(); octx.moveTo(x+mw*i/4, y); octx.lineTo(x+mw*i/4+((i%2)?-16:16), y+mh); octx.stroke();
+    }
+    octx.strokeStyle = 'rgba(180,23,63,0.6)';
+    octx.lineWidth = 3;
+    octx.beginPath(); octx.moveTo(x+mw*0.1,y+mh*0.8); octx.lineTo(cx, cy); octx.stroke();
+    octx.restore();
+    octx.strokeStyle = 'rgba(201,161,90,0.4)'; octx.lineWidth = 1.5;
+    roundRectPath(octx,x,y,mw,mh,20); octx.stroke();
+    octx.fillStyle = '#e0264f';
+    octx.beginPath();
+    octx.arc(cx, cy-6, 9, 0, Math.PI*2); octx.fill();
+    octx.beginPath();
+    octx.moveTo(cx-8,cy-2); octx.lineTo(cx+8,cy-2); octx.lineTo(cx,cy+14); octx.closePath(); octx.fill();
+  }
+
+  function drawLocationButton(octx,w,h,center){
+    drawPillButton(octx,w,h,'LOCATION',(c)=>{
+      c.beginPath();
+      c.moveTo(0,-9);
+      c.bezierCurveTo(5,-9,8,-5,8,-1);
+      c.bezierCurveTo(8,5,0,10,0,10);
+      c.bezierCurveTo(0,10,-8,5,-8,-1);
+      c.bezierCurveTo(-8,-5,-5,-9,0,-9);
+      c.closePath(); c.stroke();
+      c.beginPath(); c.arc(0,-1,2.6,0,Math.PI*2); c.stroke();
+    }, center);
+  }
+
+  function drawMessageBubble(octx, w, h, center){
+    const {cx,cy} = center || L.center();
+    const bw = Math.min(w*0.62, 260), bh = 84;
+    const x = cx-bw/2, y = cy-bh/2;
+    const g = octx.createLinearGradient(x,y,x,y+bh);
+    g.addColorStop(0,'#1c1a20'); g.addColorStop(1,'#100e12');
+    octx.fillStyle = g;
+    roundRectPath(octx,x,y,bw,bh,24);
+    octx.fill();
+    octx.beginPath();
+    octx.moveTo(x+bw*0.22,y+bh);
+    octx.lineTo(x+bw*0.1,y+bh+14);
+    octx.lineTo(x+bw*0.34,y+bh);
+    octx.closePath(); octx.fill();
+    octx.strokeStyle='rgba(201,161,90,0.35)'; octx.lineWidth=1.3;
+    roundRectPath(octx,x,y,bw,bh,24); octx.stroke();
+    octx.fillStyle='#efe7dd';
+    octx.font = `500 22px Fraunces, serif`;
+    octx.textAlign='center'; octx.textBaseline='middle';
+    octx.fillText('Hello...', cx, cy-6);
+  }
+
+  function drawWhatsAppButton(octx,w,h,center){
+    drawPillButton(octx,w,h,'WHATSAPP',(c)=>{
+      c.beginPath(); c.arc(0,0,9,Math.PI*0.15,Math.PI*1.65); c.stroke();
+      c.beginPath(); c.arc(-3,-2,1.6,0,Math.PI*2); c.fill();
+      c.beginPath(); c.arc(3,-2,1.6,0,Math.PI*2); c.fill();
+      c.beginPath(); c.arc(0,2,3,0.2,Math.PI-0.2); c.stroke();
+    }, center);
+  }
+
+  function drawThankYou(octx, w, h){
+    const {cx,cy} = L.footer();
+    octx.fillStyle = '#efe7dd';
+    octx.font = `600 ${Math.min(w*0.05,20)}px Manrope, sans-serif`;
+    octx.textAlign='center'; octx.textBaseline='middle';
+    octx.save();
+    octx.letterSpacing = '3px';
+    octx.fillText('THANK YOU FOR VISITING', cx, cy);
+    octx.restore();
+  }
+
+  function drawAddress(octx, w, h){
+    const {cx,cy} = L.footer();
+    octx.fillStyle = '#efe7dd';
+    octx.font = `600 ${Math.min(w*0.042,17)}px Manrope, sans-serif`;
+    octx.textAlign='center'; octx.textBaseline='middle';
+    const lines = ['123, Green Street, Near City Park','Bangalore, Karnataka 560001'];
+    octx.fillText(lines[0], cx, cy-12);
+    octx.fillText(lines[1], cx, cy+12);
+  }
+
+  /* =============== overlay helpers =============== */
+  const ov = {
+    logo: document.getElementById('logoOverlay'),
+    name: document.getElementById('nameOverlay'),
+    owner: document.getElementById('ownerOverlay'),
+    about: document.getElementById('aboutOverlay'),
+    call: document.getElementById('callOverlay'),
+    location: document.getElementById('locationOverlay'),
+    whatsapp: document.getElementById('whatsappOverlay'),
+    chips: document.getElementById('chipsOverlay'),
+    footer: document.getElementById('footerOverlay')
+  };
+  const OWNER_NAME = 'Ravi Kumar';
+
+  function placeLogoStage(){
+    const {cx,cy,size} = L.logo();
+    Object.assign(ov.logo.style,{ left:(cx-size/2)+'px', top:(cy-size/2)+'px', width:size+'px', height:size+'px', fontSize:(size*0.4)+'px' });
+  }
+  function placeNameStage(){
+    const {cx,cy,size} = L.logo();
+    const y = cy + size/2 + 26;
+    const w = Math.min(W*0.9,420);
+    Object.assign(ov.name.style,{ left:(cx-w/2)+'px', top:y+'px', width:w+'px', height:'70px', fontSize:'2.1rem' });
+  }
+  function placeOwnerStage(){
+    const {cx,cy,size} = L.logo();
+    const y = cy + size/2 + 26 + 78;
+    const w = Math.min(W*0.7,300);
+    Object.assign(ov.owner.style,{ left:(cx-w/2)+'px', top:y+'px', width:w+'px', height:'40px', fontSize:'1.05rem' });
+  }
+  // owner name gets a deliberately different reveal from everything else:
+  // no particle morph — each letter individually rises out of a blur while
+  // a thin gold rule sweeps open beneath, like a plaque being lit up.
+  function revealOwnerName(){
+    const el = document.getElementById('ownerNameText');
+    el.innerHTML = '';
+    [...OWNER_NAME].forEach(ch=>{
+      const span = document.createElement('span');
+      span.textContent = ch === ' ' ? '\u00A0' : ch;
+      span.style.transition = 'opacity .55s cubic-bezier(.22,.9,.25,1), transform .55s cubic-bezier(.22,.9,.25,1), filter .55s ease';
+      el.appendChild(span);
+    });
+    const letters = el.querySelectorAll('span');
+    letters.forEach((s,i)=>{ s.style.transitionDelay = (i*45)+'ms'; });
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        letters.forEach(s=>{
+          s.style.opacity = '1';
+          s.style.transform = 'translateY(0) scale(1)';
+          s.style.filter = 'blur(0)';
+        });
+        setTimeout(()=>ov.owner.classList.add('lit'), letters.length*45 + 120);
+      });
+    });
+  }
+  function placePillStage(el, center){
+    const {cx,cy} = center || L.center();
+    const pw = Math.min(W*0.5,230), ph = 64;
+    Object.assign(el.style,{ left:(cx-pw/2)+'px', top:(cy-ph/2)+'px', width:pw+'px', height:ph+'px' });
+  }
+  function placeFooterStage(){
+    const {cx,cy} = L.footer();
+    const w = Math.min(W*0.86,420);
+    Object.assign(ov.footer.style,{ left:(cx-w/2)+'px', top:(cy-16)+'px', width:w+'px', height:'40px', fontSize:'0.95rem' });
+  }
+
+  function swapInCrisp(el, placeFn){
+    placeFn();
+    clearStage();
+    el.classList.add('visible');
+  }
+
+  /* =============== final assembled layout =============== */
+  function assembleFinalLayout(){
+    const cx = W/2;
+
+    // logo + name settle near the top
+    const logoSize = Math.min(W*0.15,58);
+    const logoTop = Math.max(H*0.055, 30);
+    Object.assign(ov.logo.style,{ left:(cx-logoSize/2)+'px', top:logoTop+'px', width:logoSize+'px', height:logoSize+'px', fontSize:(logoSize*0.4)+'px' });
+
+    const nameTop = logoTop + logoSize + 12;
+    const nameW = Math.min(W*0.9,420);
+    Object.assign(ov.name.style,{ left:(cx-nameW/2)+'px', top:nameTop+'px', height:'58px', width:nameW+'px', fontSize:'1.35rem' });
+
+    const ownerTop = nameTop + 50;
+    const ownerW = Math.min(W*0.6,240);
+    Object.assign(ov.owner.style,{ left:(cx-ownerW/2)+'px', top:ownerTop+'px', width:ownerW+'px', height:'32px', fontSize:'0.82rem' });
+
+    const aboutTop = ownerTop + 44;
+    const aboutW = Math.min(W*0.76,330);
+    Object.assign(ov.about.style,{ left:(cx-aboutW/2)+'px', top:aboutTop+'px', width:aboutW+'px', height:'50px', fontSize:'0.8rem' });
+    ov.about.classList.add('visible');
+
+    // the three controls anchor at the true centre of the screen — the
+    // focal point of the whole page
+    const btnW = Math.min(W*0.27, 108), btnH = 48;
+    const gap = 12;
+    const totalW = btnW*3 + gap*2;
+    const startX = cx - totalW/2;
+    const btnTop = Math.max(aboutTop + 76, H*0.5 - btnH/2);
+    [ov.call, ov.location, ov.whatsapp].forEach((el,i)=>{
+      Object.assign(el.style,{
+        left:(startX + i*(btnW+gap))+'px', top:btnTop+'px', width:btnW+'px', height:btnH+'px', fontSize:'0.62rem'
+      });
+    });
+
+    // the space below the buttons and above the footer is put to work
+    // with quick-trust signals instead of sitting empty
+    const chipsTop = btnTop + btnH + 34;
+    const chipsW = Math.min(W*0.86, 380);
+    Object.assign(ov.chips.style,{ left:(cx-chipsW/2)+'px', top:chipsTop+'px', width:chipsW+'px', height:'34px' });
+    ov.chips.classList.add('visible');
+
+    placeFooterStage();
+  }
+
+  /* =============== main sequence =============== */
+  let skipped = false;
+  document.getElementById('skipBtn').addEventListener('click', ()=>{ Sound.unlock(); skipped = true; });
+  [ov.call, ov.location, ov.whatsapp].forEach(el=>{
+    el.addEventListener('pointerdown', ()=>Sound.tick(), { passive:true });
+  });
+
+  async function runSequence(){
+    const skipBtn = document.getElementById('skipBtn');
+    Sound.unlock();
+
+    // ---- Page 1: logo assembles directly from the same ambient particles
+    // as the background — no full-page photo, straight to a creative
+    // particle reveal of the logo itself ----
+    clearStage();
+    { const {cx,cy} = L.logo(); pulseGlow(cx,cy); }
+    Sound.whoosh(1.0);
+    const logoPts = sampleFromRender(drawLogo, 3, 60);
+    const scatterSrc = Array.from({ length: Math.min(2400, Math.max(logoPts.length, 800)) }, ()=>({
+      x: Math.random()*W, y: Math.random()*H, r: 1.1, a: 0.28 + Math.random()*0.25,
+      color: Math.random() > 0.5 ? [201,161,90] : [180,23,63]
+    }));
+    await morph(scatterSrc, logoPts, 1100, 2400);
+    swapInCrisp(ov.logo, placeLogoStage);
+    Sound.chime([523.25, 659.25], 0.5);
+    await delay(120);
+
+    placeNameStage();
+    ov.name.classList.add('visible');
+    Sound.chime([440], 0.6, 0);
+    await delay(750);
+    if(skipped){ finishInstantly(); return; }
+
+    // ---- Owner name: a distinctly different reveal — letters lift out of a
+    // blur one by one while a thin gold rule lights up beneath, rather than
+    // the particle-morph used everywhere else ----
+    placeOwnerStage();
+    ov.owner.classList.add('visible');
+    Sound.chime([349.23, 440], 0.7, 0.14);
+    revealOwnerName();
+    await delay(950);
+    if(skipped){ finishInstantly(); return; }
+
+    // ---- Page 2a: phone -> call ----
+    const callSlot = L.slot(0);
+    pulseGlow(callSlot.cx, callSlot.cy);
+    Sound.whoosh(1.0);
+    const phonePts = sampleFromRender((c,w,h)=>drawPhoneText(c,w,h,callSlot), 3, 60);
+    const callPts = sampleFromRender((c,w,h)=>drawCallButton(c,w,h,callSlot), 3, 60);
+    ctx.clearRect(0,0,W,H);
+    await morph(phonePts, callPts, 1000, 1800);
+    swapInCrisp(ov.call, ()=>placePillStage(ov.call, callSlot));
+    Sound.chime([523.25, 659.25, 783.99], 0.45);
+    await delay(550);
+    if(skipped){ finishInstantly(); return; }
+
+    // ---- Page 2b: map -> location (reveals independently, below Call) ----
+    const locSlot = L.slot(1);
+    pulseGlow(locSlot.cx, locSlot.cy);
+    Sound.whoosh(0.9);
+    ctx.clearRect(0,0,W,H);
+    drawMap(ctx, W, H, locSlot);
+    const mapPts = sampleFromRender((c,w,h)=>drawMap(c,w,h,locSlot), 4, 40);
+    await delay(500);
+    const locPts = sampleFromRender((c,w,h)=>drawLocationButton(c,w,h,locSlot), 3, 60);
+    Sound.whoosh(1.15);
+    await morph(mapPts, locPts, 1150, 2200);
+    swapInCrisp(ov.location, ()=>placePillStage(ov.location, locSlot));
+    Sound.chime([523.25, 659.25, 783.99], 0.45);
+    await delay(550);
+    if(skipped){ finishInstantly(); return; }
+
+    // ---- Page 2c: message -> whatsapp (reveals independently, below Location) ----
+    const waSlot = L.slot(2);
+    pulseGlow(waSlot.cx, waSlot.cy);
+    Sound.whoosh(0.8);
+    ctx.clearRect(0,0,W,H);
+    drawMessageBubble(ctx, W, H, waSlot);
+    const msgPts = sampleFromRender((c,w,h)=>drawMessageBubble(c,w,h,waSlot), 3, 50);
+    await delay(450);
+    const waPts = sampleFromRender((c,w,h)=>drawWhatsAppButton(c,w,h,waSlot), 3, 60);
+    Sound.whoosh(1.0);
+    await morph(msgPts, waPts, 1000, 1800);
+    swapInCrisp(ov.whatsapp, ()=>placePillStage(ov.whatsapp, waSlot));
+    Sound.chime([523.25, 659.25, 783.99], 0.45);
+    await delay(700);
+    if(skipped){ finishInstantly(); return; }
+
+    // ---- Assemble final bio page ----
+    pulseGlow(W/2, H*0.42);
+    Sound.chime([392, 493.88, 587.33, 783.99], 0.6, 0.11);
+    assembleFinalLayout();
+    await delay(1150);
+
+    // ---- Footer: thank you -> address ----
+    Sound.whoosh(1.2);
+    const thanksPts = sampleFromRender(drawThankYou, 2, 50);
+    const addrPts = sampleFromRender(drawAddress, 2, 50);
+    // draw thank-you as particles in place (footer overlay already shows text via DOM; swap to canvas for the morph)
+    ov.footer.classList.remove('visible');
+    await morph(thanksPts, addrPts, 1200, 2000);
+    ov.footer.querySelector('.addr').innerHTML = '123, Green Street<br>Near City Park<br>Bangalore, Karnataka 560001';
+    placeFooterStage();
+    ov.footer.style.height = '64px';
+    ov.footer.classList.add('visible');
+    Sound.chime([440, 554.37], 0.5);
+    clearStage();
+
+    skipBtn.classList.add('hidden');
+  }
+
+  function finishInstantly(){
+    clearStage();
+    placeLogoStage(); ov.logo.classList.add('visible');
+    placeNameStage(); ov.name.classList.add('visible');
+    document.getElementById('ownerNameText').textContent = OWNER_NAME;
+    ov.owner.classList.add('visible','lit');
+    placePillStage(ov.call); ov.call.classList.add('visible');
+    placePillStage(ov.location); ov.location.classList.add('visible');
+    placePillStage(ov.whatsapp); ov.whatsapp.classList.add('visible');
+    assembleFinalLayout();
+    ov.about.classList.add('visible');
+    ov.chips.classList.add('visible');
+    ov.footer.querySelector('.addr').innerHTML = '123, Green Street<br>Near City Park<br>Bangalore, Karnataka 560001';
+    ov.footer.style.height = '64px';
+    ov.footer.classList.add('visible');
+    document.getElementById('skipBtn').classList.add('hidden');
+  }
+
+  /* ---------- returning visitors land straight on the finished page ----------
+     First-time visitors get the full cinematic reveal. On every visit after
+     that, the animation is skipped so a regular customer checking the phone
+     number or address isn't stuck watching the same reveal every time. */
+  function hasVisitedBefore(){
+    try { return localStorage.getItem('crimsonhub_visited') === '1'; }
+    catch(e){ return false; } // private browsing / storage blocked — just replay the intro
+  }
+  function markVisited(){
+    try { localStorage.setItem('crimsonhub_visited', '1'); }
+    catch(e){ /* storage unavailable — no-op, intro will just replay next time */ }
+  }
+
+  if(hasVisitedBefore()){
+    document.getElementById('skipBtn').classList.add('hidden');
+    finishInstantly();
+  } else {
+    markVisited();
+    runSequence();
+  }
+})();
+</script>
+</body>
+</html>
