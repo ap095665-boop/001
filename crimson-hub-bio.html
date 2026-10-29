@@ -275,11 +275,11 @@
 
   #chipsOverlay{
     display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
-    gap:9px;
+    gap:7px;
   }
   #chipsOverlay .chip{
     display:flex; align-items:center; gap:6px;
-    padding:7px 13px;
+    padding:7px 11px;
     border-radius:999px;
     background:rgba(239,231,221,0.05);
     border:1px solid rgba(201,161,90,0.28);
@@ -300,6 +300,38 @@
     0%,100%{ opacity:1; transform:scale(1); }
     50%{ opacity:0.55; transform:scale(0.75); }
   }
+
+  /* ---------- store timing: moving banner (sits above the address) ---------- */
+  #timingOverlay{
+    display:flex; align-items:center; gap:10px;
+    padding:0 14px 0 12px; border-radius:999px; overflow:hidden;
+    background:rgba(239,231,221,0.05); border:1px solid rgba(201,161,90,0.35);
+    backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  }
+  #timingOverlay .t-icon{ width:15px; height:15px; flex-shrink:0; color:var(--gold); }
+  #timingOverlay .t-label{
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:0.6rem;
+    letter-spacing:0.16em; text-transform:uppercase; color:var(--gold);
+    flex-shrink:0; white-space:nowrap;
+  }
+  .t-window{
+    position:relative; flex:1; min-width:0; height:100%; overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+            mask-image:linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+  .t-track{
+    position:absolute; left:0; top:0; height:100%;
+    display:flex; align-items:center; width:max-content;
+    animation:timingMove 16s linear infinite;
+  }
+  .t-group{ display:flex; align-items:center; flex-shrink:0; }
+  .t-item{
+    font-family:'Manrope',sans-serif; font-weight:600; font-size:0.68rem;
+    letter-spacing:0.08em; color:var(--bone); white-space:nowrap;
+  }
+  .t-sep{ color:var(--crimson-2); margin:0 14px; font-size:0.6rem; }
+  @keyframes timingMove{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce){ .t-track{ animation-duration:60s; } }
 
   /* skip intro */
   #skipBtn{
@@ -377,6 +409,15 @@
     <span class="chip live"><span class="dot"></span>Open Now</span>
     <span class="chip">UPI Accepted</span>
     <span class="chip">Home Delivery</span>
+  </div>
+
+  <!-- STORE TIMING: edit the items below; the banner loops them automatically -->
+  <div id="timingOverlay" class="overlay-el" aria-label="Store timing">
+    <svg class="t-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+    <div class="t-window"><div class="t-track" id="timingTrack"><div class="t-group" id="timingGroup">
+      <span class="t-item">Mon – Sat: 8:00 AM – 10:00 PM</span><span class="t-sep">✦</span>
+      <span class="t-item">Sunday: 9:00 AM – 2:00 PM</span><span class="t-sep">✦</span>
+    </div></div></div>
   </div>
 
   <div id="footerOverlay" class="overlay-el">
@@ -960,6 +1001,7 @@ Personal Care</div>
     rate: document.getElementById('rateOverlay'),
     products: document.getElementById('productsOverlay'),
     chips: document.getElementById('chipsOverlay'),
+    timing: document.getElementById('timingOverlay'),
     footer: document.getElementById('footerOverlay')
   };
   const OWNER_NAME = 'Ravi Kumar';
@@ -1071,9 +1113,15 @@ Personal Care</div>
     // the space below the buttons and above the footer is put to work
     // with quick-trust signals instead of sitting empty
     const chipsTop = row2Top + btnH + 28;
-    const chipsW = Math.min(W*0.86, 380);
-    Object.assign(ov.chips.style,{ left:(cx-chipsW/2)+'px', top:chipsTop+'px', width:chipsW+'px', height:'34px' });
-    if(showChips) ov.chips.classList.add('visible');
+    const chipsW = Math.min(W*0.94, 380);
+    Object.assign(ov.chips.style,{ left:(cx-chipsW/2)+'px', top:chipsTop+'px', width:chipsW+'px', height:'auto' });
+    const chipsH = ov.chips.offsetHeight || 34;
+    // moving timing banner: sits just above the address, never touching the chips
+    const footerTop = L.footer().cy - 16;
+    const timingH = 32;
+    const timingTop = Math.max(chipsTop + chipsH + 10, footerTop - 14 - timingH);
+    Object.assign(ov.timing.style,{ left:(cx-chipsW/2)+'px', top:timingTop+'px', width:chipsW+'px', height:timingH+'px' });
+    if(showChips){ ov.chips.classList.add('visible'); ov.timing.classList.add('visible'); }
 
     placeFooterStage();
   }
@@ -1084,6 +1132,16 @@ Personal Care</div>
   [ov.call, ov.location, ov.whatsapp, ov.rate, ov.products].forEach(el=>{
     el.addEventListener('pointerdown', ()=>Sound.tick(), { passive:true });
   });
+
+  /* ---------- timing banner: seamless loop ---------- */
+  (function(){
+    const track = document.getElementById('timingTrack');
+    const group = document.getElementById('timingGroup');
+    group.innerHTML = group.innerHTML + group.innerHTML; // wider than the window
+    const clone = group.cloneNode(true);
+    clone.removeAttribute('id'); clone.setAttribute('aria-hidden','true');
+    track.appendChild(clone);
+  })();
 
   /* ---------- products popup ---------- */
   const productsModal = document.getElementById('productsModal');
@@ -1231,6 +1289,9 @@ Personal Care</div>
     Sound.chime([523.25, 659.25, 783.99], 0.45);
     await delay(450);
     ov.chips.classList.add('visible');
+    await delay(350);
+    ov.timing.classList.add('visible');
+    Sound.chime([659.25, 783.99], 0.4, 0.08);
     await delay(500);
     if(skipped){ finishInstantly(); return; }
 
@@ -1265,6 +1326,7 @@ Personal Care</div>
     ov.products.classList.add('visible');
     ov.about.classList.add('visible');
     ov.chips.classList.add('visible');
+    ov.timing.classList.add('visible');
     ov.footer.querySelector('.addr').innerHTML = '123, Green Street<br>Near City Park<br>Bangalore, Karnataka 560001';
     ov.footer.style.height = '64px';
     ov.footer.classList.add('visible');
